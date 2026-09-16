@@ -231,7 +231,7 @@ plasterTex.wrapS = plasterTex.wrapT = THREE.RepeatWrapping;
 
 buildRoom(0, whiteTex, ['left','right','pill'], rainWhite.tex);  // Reception — animated white rain walls
 buildRoom(-16, plasterTex, ['right']);         // Red Pill Gallery — gallery plaster walls
-buildRoom(16, dreamTex, ['left']);             // Blue Pill Lab
+// Blue Pill Lab → 自建有機洞穴（見下面 CAVE section，取代原本長方形房間）
 
 // ---- Pill portals: tall slim capsules (floor→ceiling), fast fibre rain (1.8x reception speed) — ref IMG_8165-2 ----
 rainRed.tex.repeat.set(2.2, 1.4);
@@ -248,7 +248,9 @@ pillPortal(6, rainBlue.tex, 0x4488ff);   // Blue Pill Lab portal
 // lights per room
 const pl1 = new THREE.PointLight(0xffffff, 60, 30); pl1.position.set(0,3.4,0); scene.add(pl1);
 const pl2 = new THREE.PointLight(0xdfeaf2, 14, 26); pl2.position.set(-16,2.4,0); scene.add(pl2);
-const pl3 = new THREE.PointLight(0xeebbff, 60, 30); pl3.position.set(16,3.4,0); scene.add(pl3);
+const pl3 = new THREE.PointLight(0x66ffe0, 45, 30); pl3.position.set(14,2.6,0); scene.add(pl3);
+const plPink = new THREE.PointLight(0xff77dd, 26, 15); plPink.position.set(14,3.3,0); scene.add(plPink); // 粉紅網布嘅光晕
+for (const lx of [10, 18]) { const l = new THREE.PointLight(0x66ffe0, 24, 14); l.position.set(lx,2.2,0); scene.add(l); } // 洞穴補光
 
 // ---- Reception: big profile screen on front wall (z=-5) ----
 const screenMat = new THREE.MeshBasicMaterial({ color:0x220044 });
@@ -370,12 +372,119 @@ wallFrame('r2', -12.8, -4.9, 0,       'AGE OF TANKS', 'Game Trailer Audio');
 wallFrame('r4', -19.5,  4.9, Math.PI, 'VOODOO BOO PARK', 'Theme Park Sound');
 wallFrame('r5', -12.8,  4.9, Math.PI, '你是你的傳奇', 'Docudrama Songs');
 
-// Blue Pill Lab (room center x=16)
-panel(12.5,-4.92, 0,        'b1', '#cc88ff', 'HÖR BERLIN MAIN ACT');
-panel(16,  -4.92, 0,        'b2', '#cc88ff', 'LOCAL & ASIA');
-panel(19.5,-4.92, 0,        'b3', '#cc88ff', 'ABYSS852 × AI');
-panel(12.8, 4.92, Math.PI,  'b4', '#cc88ff', 'PRESS WALL');
-panel(19.2, 4.92, Math.PI,  'b5', '#cc88ff', 'CONTACT');
+// ==================== BLUE PILL LAB — ORGANIC CAVE ====================
+// ref: 銀綠洞穴（空間主體）· 藍/橙霓虹光框（展框）· 粉紅網布（天花）
+const rockTex = canvasTexture((g,w,h)=>{
+  g.fillStyle='#0c1414'; g.fillRect(0,0,w,h);
+  for(let i=0;i<2600;i++){ const v=Math.random();
+    g.fillStyle=`rgba(${40+v*40},${70+v*50},${70+v*45},${0.05+Math.random()*0.12})`;
+    g.fillRect(Math.random()*w,Math.random()*h,2+Math.random()*4,1+Math.random()*3); }
+  g.strokeStyle='rgba(120,170,165,.15)'; g.lineWidth=1;
+  for(let i=0;i<40;i++){ g.beginPath(); let x=Math.random()*w,y=Math.random()*h; g.moveTo(x,y);
+    for(let j=0;j<5;j++){ x+=(Math.random()-.5)*40; y+=(Math.random()-.5)*40; g.lineTo(x,y);} g.stroke(); }
+});
+rockTex.wrapS=rockTex.wrapT=THREE.RepeatWrapping; rockTex.repeat.set(6,2);
+
+// 洞穴隧道：沿 X 軸嘅圓管，頂點加 noise 位移變成有機岩石形狀（x∈[6,22]）
+{
+  const caveGeo = new THREE.CylinderGeometry(5.5,5.5,16,48,20,true);
+  caveGeo.rotateZ(Math.PI/2);
+  const p = caveGeo.attributes.position;
+  for (let i=0;i<p.count;i++){
+    const x=p.getX(i), y=p.getY(i), z=p.getZ(i);
+    const a=Math.atan2(z,y);
+    const n=Math.sin(a*3+x*0.8)*0.5+Math.sin(a*7+x*1.7)*0.3+Math.sin(a*11+x*3.1)*0.15;
+    const r=5.5*(1+0.16*n);
+    p.setY(i, Math.cos(a)*r); p.setZ(i, Math.sin(a)*r);
+  }
+  caveGeo.computeVertexNormals();
+  const cave = new THREE.Mesh(caveGeo, new THREE.MeshStandardMaterial({ map:rockTex, side:THREE.BackSide, roughness:.95 }));
+  cave.position.set(14,1,0); scene.add(cave);
+  // 洞穴地面（深色岩石）
+  const ft = rockTex.clone(); ft.needsUpdate=true; ft.repeat.set(4,3);
+  const caveFloor = new THREE.Mesh(new THREE.PlaneGeometry(16,10.8), new THREE.MeshStandardMaterial({ map:ft, roughness:.95 }));
+  caveFloor.rotation.x=-Math.PI/2; caveFloor.position.set(14,0,0); scene.add(caveFloor);
+  // 盡頭岩壁（x=22）
+  const ct = rockTex.clone(); ct.needsUpdate=true;
+  const cap = new THREE.Mesh(new THREE.CircleGeometry(6.5,32), new THREE.MeshStandardMaterial({ map:ct, roughness:1 }));
+  cap.position.set(22,1,0); cap.rotation.y=-Math.PI/2; scene.add(cap);
+  // 石板路（ref 3）
+  const slabM = new THREE.MeshStandardMaterial({ color:0x1e2a2a, roughness:.9 });
+  for (let x=6.6; x<21.6; x+=0.75){
+    const s=new THREE.Mesh(new THREE.BoxGeometry(0.6,0.06,1.6+Math.random()*0.3), slabM);
+    s.position.set(x,0.03,(Math.random()-.5)*0.15); s.rotation.y=(Math.random()-.5)*0.06; scene.add(s);
+  }
+}
+
+// 粉紅發光網布天花（ref: ceiling reference.jpg）— wireframe 波浪布，loop 入面郁
+let netMesh=null, netBase=null;
+{
+  netMesh = new THREE.Mesh(new THREE.PlaneGeometry(14.5,8.5,48,28),
+    new THREE.MeshBasicMaterial({ color:0xff77dd, wireframe:true, transparent:true, opacity:.42, side:THREE.DoubleSide }));
+  netMesh.rotation.x = -Math.PI/2; netMesh.position.set(14,3.2,0); scene.add(netMesh);
+  const p=netMesh.geometry.attributes.position; netBase=new Float32Array(p.count*2);
+  for(let i=0;i<p.count;i++){ netBase[i*2]=p.getX(i); netBase[i*2+1]=p.getY(i); }
+}
+
+// 霓虹光框展框（ref: blue/orange light box）— 企喺路中間，可以行穿過
+function neonFrame(work, x, z, rotY, title, sub, color=0x4a9bff){
+  const fallback = (g,w,h)=>{ g.fillStyle='#04101c'; g.fillRect(0,0,w,h);
+    g.strokeStyle='#9fd4ff'; g.lineWidth=10; g.strokeRect(12,12,w-24,h-24);
+    g.fillStyle='#cfeaff'; g.font='bold 44px Arial'; g.textAlign='center'; g.fillText(title,w/2,h/2); };
+  const t = photoTexture(work, title, sub, '#9fd4ff', 1024, 640, fallback);
+  const art = new THREE.Mesh(new THREE.PlaneGeometry(2.5,1.6),
+    new THREE.MeshStandardMaterial({ map:t, emissive:0xffffff, emissiveMap:t, emissiveIntensity:.55, side:THREE.DoubleSide }));
+  art.position.set(x,1.7,z); art.rotation.y=rotY; art.userData.work=work;
+  scene.add(art); interactives.push(art);
+  const m = new THREE.MeshBasicMaterial({ color });
+  const W=2.7, Hf=1.85, T=0.07;
+  const grp = new THREE.Group();
+  const top = new THREE.Mesh(new THREE.BoxGeometry(W,T,T), m); top.position.y=Hf/2; grp.add(top);
+  const bot = top.clone(); bot.position.y=-Hf/2; grp.add(bot);
+  const l = new THREE.Mesh(new THREE.BoxGeometry(T,Hf,T), m); l.position.x=-W/2; grp.add(l);
+  const r = l.clone(); r.position.x=W/2; grp.add(r);
+  grp.position.set(x,1.7,z); grp.rotation.y=rotY; scene.add(grp);
+}
+// 沿路排列（ref 3 嘅 portal 序列）；HÖR 用橙框做全場焦點
+neonFrame('b1',  9.8, -0.2, -Math.PI/2+0.12, 'HÖR BERLIN', 'Main Act of the Night', 0xffaa33);
+neonFrame('b2', 12.3,  0.5, -Math.PI/2-0.10, 'LOCAL & ASIA', 'Clockenflap · China Tour · S2O · TW');
+neonFrame('b3', 14.8, -0.4, -Math.PI/2+0.08, 'ABYSS852 × NYRA', 'Events × AI Singer');
+neonFrame('b4', 17.3,  0.4, -Math.PI/2-0.12, 'PRESS WALL', 'Esquire · HK01 · Mixmag');
+neonFrame('b5', 19.8, -0.2, -Math.PI/2,      'CONTACT · LUCKY DRAW', 'Get in touch', 0xcc88ff);
+
+// ==================== DOORWAY TUNNELS ====================
+// 短門道（唔延長距離）：藥丸後面 3 米隧道，完全遮擋視覺
+function buildTunnel(cx, style){
+  const LEN=3.0;
+  if (style==='grid'){ // 🔴 Red：黑底白線框網格（ref: door way option ref.jpg）
+    const box = new THREE.Mesh(new THREE.BoxGeometry(LEN,3.2,2.8,1,1,1),
+      new THREE.MeshBasicMaterial({ color:0x000000, side:THREE.BackSide }));
+    box.position.set(cx,1.6,0); scene.add(box);
+    const wire = new THREE.Mesh(new THREE.BoxGeometry(LEN*0.99,3.1,2.7,5,5,4),
+      new THREE.MeshBasicMaterial({ color:0xffffff, wireframe:true, transparent:true, opacity:.75 }));
+    wire.position.set(cx,1.6,0); scene.add(wire);
+  } else { // 🔵 Blue：波浪玻璃隧道（ref: blue room door way.jpg）+ 內層黑管遮擋
+    const inner = new THREE.Mesh(new THREE.CylinderGeometry(1.5,1.5,LEN,32,1,true),
+      new THREE.MeshBasicMaterial({ color:0x010a0c, side:THREE.BackSide }));
+    inner.geometry.rotateZ(Math.PI/2); inner.position.set(cx,1.6,0); scene.add(inner);
+    const geo = new THREE.CylinderGeometry(1.7,1.7,LEN,32,12,true);
+    geo.rotateZ(Math.PI/2);
+    const pos = geo.attributes.position;
+    for(let i=0;i<pos.count;i++){
+      const x=pos.getX(i), y=pos.getY(i), z=pos.getZ(i);
+      const a=Math.atan2(z,y);
+      const r=1.7+0.22*Math.sin(a*4+x*2.2);
+      pos.setY(i, Math.cos(a)*r); pos.setZ(i, Math.sin(a)*r);
+    }
+    geo.computeVertexNormals();
+    const tube = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
+      color:0x9ff2e8, transparent:true, opacity:.3, roughness:.15, metalness:.85,
+      side:THREE.DoubleSide, emissive:0x1a8f84, emissiveIntensity:.5 }));
+    tube.position.set(cx,1.6,0); scene.add(tube);
+  }
+}
+buildTunnel(-7.5,'grid');  // Red Pill 門道（喺紅房嗰邊，Reception 見唔到）
+buildTunnel(7.5,'wave');   // Blue Pill 門道（喺藍洞穴嗰邊）
 
 // room title signs (floating text planes)
 function sign(x, z, rotY, text, color) {
@@ -384,7 +493,7 @@ function sign(x, z, rotY, text, color) {
   m.position.set(x,3.4,z); m.rotation.y=rotY; scene.add(m);
 }
 sign(0,4.9,Math.PI,'RECEPTION','#00ffff');
-sign(16,4.9,Math.PI,'BLUE PILL LAB · TASTE OF BLUE','#cc88ff');
+sign(7.2,0,-Math.PI/2,'BLUE PILL LAB · TASTE OF BLUE','#9ff2e8');
 
 // ============ PLAYER CONTROLS ============
 const player = { x:0, z:3, yaw:0, pitch:0 };
@@ -467,8 +576,8 @@ const regions = [
   {x1:-6+0.35, x2:6-0.35, z1:-5+0.35, z2:5-0.35},      // reception
   {x1:-22+0.35, x2:-6-0.35, z1:-5+0.35, z2:5-0.35},    // red
   {x1:6+0.35, x2:22-0.35, z1:-5+0.35, z2:5-0.35},      // blue
-  {x1:-6-0.5, x2:-6+0.5, z1:-1.2, z2:1.2},             // door L
-  {x1:6-0.5, x2:6+0.5, z1:-1.2, z2:1.2},               // door R
+  {x1:-7.6, x2:-4.4, z1:-1.2, z2:1.2},             // door L tunnel
+  {x1:4.4, x2:7.6, z1:-1.2, z2:1.2},               // door R tunnel
 ];
 function allowed(x,z){ return regions.some(r => x>=r.x1 && x<=r.x2 && z>=r.z1 && z<=r.z2); }
 
@@ -521,6 +630,15 @@ function loop(){
   if (rainAccW > 0.07) { rainWhite.step(0.5); rainAccW = 0; rainDirty = true; }
   if (rainAccR > 0.07) { rainRed.step(0.9); rainBlue.step(0.9); rainAccR = 0; rainDirty = true; }
   if (rainDirty) for (const t of animatedTexes) t.needsUpdate = true;
+  // 粉紅網布波浪動畫（洞穴天花）
+  if (netMesh){
+    const p=netMesh.geometry.attributes.position, t=clock.elapsedTime;
+    for(let i=0;i<p.count;i++){
+      const bx=netBase[i*2], by=netBase[i*2+1];
+      p.setZ(i, Math.sin(bx*0.9+t*0.9)*0.35 + Math.cos(by*1.1+t*0.6)*0.3);
+    }
+    p.needsUpdate=true;
+  }
   const spd = 4*dt;
   let mx=0, mz=0;
   if (keys['ArrowUp']||keys['KeyW']) mz += 1;
