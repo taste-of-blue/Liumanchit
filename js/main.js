@@ -495,6 +495,38 @@ function sign(x, z, rotY, text, color) {
 sign(0,4.9,Math.PI,'RECEPTION','#00ffff');
 sign(7.2,0,-Math.PI/2,'BLUE PILL LAB · TASTE OF BLUE','#9ff2e8');
 
+// ---- Reception 牆上指示牌：紅藍藥丸方向導引 ----
+function directionSign(x, z, rotY, line1, line2, color, arrowLeft){
+  const t = canvasTexture((g,w,h)=>{
+    g.clearRect(0,0,w,h);
+    // 深色半透明底板 + 主色描邊
+    g.fillStyle='rgba(8,12,18,.85)';
+    g.beginPath(); g.roundRect(6,6,w-12,h-12,26); g.fill();
+    g.strokeStyle=color; g.lineWidth=6; g.stroke();
+    // 箭嘴（三角形+柄），指向藥丸
+    const ax = arrowLeft ? 90 : w-90, dir = arrowLeft ? -1 : 1, ay = h/2;
+    g.fillStyle=color;
+    g.beginPath();
+    g.moveTo(ax+dir*46, ay); g.lineTo(ax-dir*10, ay-38); g.lineTo(ax-dir*10, ay-14);
+    g.lineTo(ax-dir*62, ay-14); g.lineTo(ax-dir*62, ay+14); g.lineTo(ax-dir*10, ay+14);
+    g.lineTo(ax-dir*10, ay+38); g.closePath(); g.fill();
+    // 文字
+    const tx = arrowLeft ? 170 : 60, align='left';
+    g.textAlign=align;
+    g.fillStyle='#ffffff'; g.font='bold 44px Arial';
+    g.fillText(line1, tx, h/2-14);
+    g.fillStyle=color; g.font='bold 40px Arial';
+    g.fillText(line2, tx, h/2+42);
+  },1024,256);
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(3.6,.9),
+    new THREE.MeshBasicMaterial({ map:t, transparent:true, side:THREE.DoubleSide }));
+  m.position.set(x,2.3,z); m.rotation.y=rotY; scene.add(m);
+}
+// 左牆（紅藥丸側，企於大螢幕同紅門之間）：箭嘴指向 +z（本地 -x 方向）
+directionSign(-5.92,-2.7, Math.PI/2,'FOR CORPORATE PORTFOLIO','PLEASE ENTER THE RED PILL','#ff3346', true);
+// 右牆（藍藥丸側）
+directionSign( 5.92,-2.7,-Math.PI/2,'ARTIST PORTFOLIO','PLEASE ENTER THE BLUE PILL','#4a9bff', false);
+
 // ============ PLAYER CONTROLS ============
 const player = { x:0, z:3, yaw:0, pitch:0 };
 const keys = {};
