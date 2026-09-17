@@ -38,7 +38,7 @@ const WORKS = {
       ['🎬 S2O Festival HK Highlights (IG Reel)','https://www.instagram.com/reel/DaTZJuGzHPo/'],
       ['🎬 Taiwan Otobasho Show Highlights (IG Reel)','https://www.instagram.com/reel/DHo0J2TTpgv/'],
       ['🎧 Eason Chan「裙下之臣」TOB Mashup Remix (SoundCloud)','https://on.soundcloud.com/BIlbfQAoCXx8hhpOr3']] },
-  b3: { tag:'blue', label:'BLUE PILL LAB · TASTE OF BLUE', title:'Taste of Blue — Event Organising × Artist Collaboration',
+  b3: { tag:'blue', label:'BLUE PILL LAB · TASTE OF BLUE', title:'Event Organiser × Collaboration — Taste of Blue',
     body:'Event Coordinator / Music Producer\n\nOrganising Hong Kong local electronic music events (Abyss852) and bridging the scene with forward-thinking content — including a collaboration with Taiwan-based AI singer NYRA.',
     vids:['ieJpklzCzlM'],
     links:[['📸 Abyss852 Event Post (IG)','https://www.instagram.com/p/DFjy_1dxwdB/'],
@@ -454,7 +454,7 @@ function neonFrame(work, x, z, rotY, title, sub, color=0x4a9bff, S=1){
 // Main 喺最深處正中放大聚焦，2nd 貼身側翼，其餘扇形圍住，全部框面扭向入口
 neonFrame('b1', 20.2,  0.0, -Math.PI/2,       'HÖR BERLIN', 'Main Act of the Night', 0xffaa33, 1.5); // MAIN
 neonFrame('b2', 17.6, -2.9, -Math.PI/2+0.72,  'LOCAL & ASIA', 'Clockenflap · China Tour · S2O · TW', 0x4a9bff, 1.15); // 2nd
-neonFrame('b3', 17.6,  2.9, -Math.PI/2-0.72,  'TASTE OF BLUE', 'Event Organising × Artist Collaboration');
+neonFrame('b3', 17.6,  2.9, -Math.PI/2-0.72,  'EVENT ORGANISER × COLLABORATION', 'Taste of Blue');
 neonFrame('b4', 13.4, -3.3, -Math.PI/2+0.95,  'PRESS WALL', 'Esquire · HK01 · Mixmag');
 neonFrame('b5', 13.4,  3.3, -Math.PI/2-0.95,  'CONTACT', 'Lucky Draw · Get in touch', 0xcc88ff);
 
