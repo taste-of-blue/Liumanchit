@@ -426,31 +426,33 @@ let netMesh=null, netBase=null;
   for(let i=0;i<p.count;i++){ netBase[i*2]=p.getX(i); netBase[i*2+1]=p.getY(i); }
 }
 
-// 霓虹光框展框（ref: blue/orange light box）— 企喺路中間，可以行穿過
-function neonFrame(work, x, z, rotY, title, sub, color=0x4a9bff){
+// 霓虹光框展框（ref: blue/orange light box）— 扇形面向入口，S=整體放大倍數
+function neonFrame(work, x, z, rotY, title, sub, color=0x4a9bff, S=1){
   const fallback = (g,w,h)=>{ g.fillStyle='#04101c'; g.fillRect(0,0,w,h);
     g.strokeStyle='#9fd4ff'; g.lineWidth=10; g.strokeRect(12,12,w-24,h-24);
     g.fillStyle='#cfeaff'; g.font='bold 44px Arial'; g.textAlign='center'; g.fillText(title,w/2,h/2); };
   const t = photoTexture(work, title, sub, '#9fd4ff', 1024, 640, fallback);
-  const art = new THREE.Mesh(new THREE.PlaneGeometry(2.5,1.6),
+  const cy = Math.min(1.7*S, 2.6); // 放大時升高，Main 唔會被前面框遮住
+  const art = new THREE.Mesh(new THREE.PlaneGeometry(2.5*S,1.6*S),
     new THREE.MeshStandardMaterial({ map:t, emissive:0xffffff, emissiveMap:t, emissiveIntensity:.55, side:THREE.DoubleSide }));
-  art.position.set(x,1.7,z); art.rotation.y=rotY; art.userData.work=work;
+  art.position.set(x,cy,z); art.rotation.y=rotY; art.userData.work=work;
   scene.add(art); interactives.push(art);
   const m = new THREE.MeshBasicMaterial({ color });
-  const W=2.7, Hf=1.85, T=0.07;
+  const W=2.7*S, Hf=1.85*S, T=0.07*S;
   const grp = new THREE.Group();
   const top = new THREE.Mesh(new THREE.BoxGeometry(W,T,T), m); top.position.y=Hf/2; grp.add(top);
   const bot = top.clone(); bot.position.y=-Hf/2; grp.add(bot);
   const l = new THREE.Mesh(new THREE.BoxGeometry(T,Hf,T), m); l.position.x=-W/2; grp.add(l);
   const r = l.clone(); r.position.x=W/2; grp.add(r);
-  grp.position.set(x,1.7,z); grp.rotation.y=rotY; scene.add(grp);
+  grp.position.set(x,cy,z); grp.rotation.y=rotY; scene.add(grp);
 }
-// 沿路排列（ref 3 嘅 portal 序列）；HÖR 用橙框做全場焦點
-neonFrame('b1',  9.8, -0.2, -Math.PI/2+0.12, 'HÖR BERLIN', 'Main Act of the Night', 0xffaa33);
-neonFrame('b2', 12.3,  0.5, -Math.PI/2-0.10, 'LOCAL & ASIA', 'Clockenflap · China Tour · S2O · TW');
-neonFrame('b3', 14.8, -0.4, -Math.PI/2+0.08, 'ABYSS852 × NYRA', 'Events × AI Singer');
-neonFrame('b4', 17.3,  0.4, -Math.PI/2-0.12, 'PRESS WALL', 'Esquire · HK01 · Mixmag');
-neonFrame('b5', 19.8, -0.2, -Math.PI/2,      'CONTACT · LUCKY DRAW', 'Get in touch', 0xcc88ff);
+// 放射式策展排列（owner 手繪概念圖）：訪客喺 x≈9 出隧道，
+// Main 喺最深處正中放大聚焦，2nd 貼身側翼，其餘扇形圍住，全部框面扭向入口
+neonFrame('b1', 20.2,  0.0, -Math.PI/2,       'HÖR BERLIN', 'Main Act of the Night', 0xffaa33, 1.5); // MAIN
+neonFrame('b2', 17.6, -2.9, -Math.PI/2+0.72,  'LOCAL & ASIA', 'Clockenflap · China Tour · S2O · TW', 0x4a9bff, 1.15); // 2nd
+neonFrame('b3', 17.6,  2.9, -Math.PI/2-0.72,  'ABYSS852 × NYRA', 'Events × AI Singer');
+neonFrame('b4', 13.4, -3.3, -Math.PI/2+0.95,  'PRESS WALL', 'Esquire · HK01 · Mixmag');
+neonFrame('b5', 13.4,  3.3, -Math.PI/2-0.95,  'CONTACT · LUCKY DRAW', 'Get in touch', 0xcc88ff);
 
 // ==================== DOORWAY TUNNELS ====================
 // 短門道（唔延長距離）：藥丸後面 3 米隧道，完全遮擋視覺
