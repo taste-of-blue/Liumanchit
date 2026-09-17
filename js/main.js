@@ -23,7 +23,8 @@ const WORKS = {
   r6: { tag:'red', label:'RED PILL GALLERY · HIGHLIGHT', title:'Apple Store Film Workshop —《Pride》MV',
     body:'Music Video for Taste of Blue —《Pride》(Original Mix)\nA collaboration with Hong Kong director Kitty Yang, who chose the first track of my debut album for this Apple Store film workshop piece.',
     vids:['YkDTNMo1kCY'],
-    links:[['🎧 Listen on Spotify','https://open.spotify.com/album/65MDRMLghrnWW4oan5xdhU']] },
+    links:[['🎧 Listen on Spotify','https://open.spotify.com/album/65MDRMLghrnWW4oan5xdhU'],
+      ['📸 Director Kitty Yung\'s post (IG)','https://www.instagram.com/p/CmTwLYPv1dC/']] },
   b1: { tag:'blue', label:'BLUE PILL LAB · MAIN ACT', title:'HÖR Radio Berlin — Main Act of the Night',
     body:'Headline performance on Berlin\'s iconic HÖR Radio, plus main-act shows at Berlin venues RSO and Club OST.',
     vids:['HGpJAA-Z8d0'],
@@ -63,7 +64,7 @@ const WORKS = {
 const THUMBS = {
   r1:'assets/thumbs/40yvHKSG2Zg.jpg', r2:'assets/thumbs/rcDyp2n9OGI.jpg',
   r3:'assets/thumbs/mPEqpFp3q58.jpg', r4:'assets/thumbs/voodoo-boo.jpg',
-  r5:'assets/thumbs/docudrama.jpg',   r6:'assets/thumbs/YkDTNMo1kCY.jpg',
+  r5:'assets/thumbs/docudrama.jpg',   r6:'assets/thumbs/apple-store-pride.jpg',
   b1:'assets/thumbs/HGpJAA-Z8d0.jpg', b2:'assets/china-tour-poster.jpg',
   b3:'assets/thumbs/ieJpklzCzlM.jpg', b4:'assets/thumbs/press-wall.jpg',
   b5:'assets/thumbs/contact.jpg',
