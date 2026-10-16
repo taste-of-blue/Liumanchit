@@ -3,7 +3,7 @@ import * as THREE from 'three';
 // ============ CONTENT DATA ============
 const WORKS = {
   cv: { tag:'red', label:'CV — MAN CHIT LIU', title:'Curriculum Vitae',
-    body:'Sound Designer · Music Producer\nClick below to view or download the PDF (placeholder version — final CV coming soon).',
+    body:'Sound Designer · Music Producer\nClick below to view or download the PDF.',
     links:[['📄 Open / Download CV (PDF)','assets/cv.pdf']] },
   r1: { tag:'red', label:'RED PILL GALLERY', title:'VANN JEWELRY — Brand Film Sound Design',
     body:'Role: Sound Designer & Composer\nTools: Ableton Live\n\nRetro-futuristic soundscape blending synthwave textures with futuristic techno, crafted in direct collaboration with the film director for precise audio-to-picture sync.',
