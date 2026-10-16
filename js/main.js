@@ -258,16 +258,17 @@ const plPink = new THREE.PointLight(0xff77dd, 26, 15); plPink.position.set(14,3.
 for (const lx of [10, 18]) { const l = new THREE.PointLight(0x66ffe0, 24, 14); l.position.set(lx,2.2,0); scene.add(l); } // 洞穴補光
 
 // ---- Reception: big profile screen on front wall (z=-5) ----
+// 16:9 螢幕，寬 7m 高 3.94m，y=2.0 → 頂部 3.97 啱啱好喺 4m 牆內，唔會被天花板切
 const screenMat = new THREE.MeshBasicMaterial({ color:0x220044 });
-const screenMesh = new THREE.Mesh(new THREE.PlaneGeometry(8,4.5), screenMat);
-screenMesh.position.set(0,2.1,-4.92); scene.add(screenMesh);
+const screenMesh = new THREE.Mesh(new THREE.PlaneGeometry(7,3.94), screenMat);
+screenMesh.position.set(0,2.0,-4.92); scene.add(screenMesh);
 new THREE.TextureLoader().load('assets/profile-screen.jpg',
   t => { t.colorSpace = THREE.SRGBColorSpace; screenMat.map = t; screenMat.color.set(0xffffff); screenMat.needsUpdate = true; },
   undefined,
   err => console.warn('profile texture failed', err));
 {
-  const bezel = new THREE.Mesh(new THREE.BoxGeometry(8.4,4.9,.12), new THREE.MeshStandardMaterial({ color:0x0a0a0a, roughness:.3, metalness:.6 }));
-  bezel.position.set(0,2.1,-5.04); scene.add(bezel); // 前面 = -4.98，永遠喺螢幕(-4.92)後面，避免 z-fighting
+  const bezel = new THREE.Mesh(new THREE.BoxGeometry(7.4,4.34,.12), new THREE.MeshStandardMaterial({ color:0x0a0a0a, roughness:.3, metalness:.6 }));
+  bezel.position.set(0,2.0,-5.04); scene.add(bezel); // 前面 = -4.98，永遠喺螢幕(-4.92)後面，避免 z-fighting
 }
 
 // ---- Reception: CV panel on back wall (z=+5) ----
@@ -502,8 +503,8 @@ function sign(x, z, rotY, text, color) {
 sign(0,4.9,Math.PI,'RECEPTION','#00ffff');
 sign(7.2,0,-Math.PI/2,'BLUE PILL LAB · TASTE OF BLUE','#9ff2e8');
 
-// ---- Reception 牆上指示牌：紅藍藥丸方向導引 ----
-function directionSign(x, z, rotY, line1, line2, color, arrowLeft){
+// ---- Reception 牆上指示牌：紅藍藥丸方向導引（第三行 = 房名，放大最搶眼） ----
+function directionSign(x, z, rotY, line1, line2, roomName, color, arrowLeft){
   const t = canvasTexture((g,w,h)=>{
     g.clearRect(0,0,w,h);
     // 深色半透明底板 + 主色描邊
@@ -514,25 +515,27 @@ function directionSign(x, z, rotY, line1, line2, color, arrowLeft){
     const ax = arrowLeft ? 90 : w-90, dir = arrowLeft ? -1 : 1, ay = h/2;
     g.fillStyle=color;
     g.beginPath();
-    g.moveTo(ax+dir*46, ay); g.lineTo(ax-dir*10, ay-38); g.lineTo(ax-dir*10, ay-14);
-    g.lineTo(ax-dir*62, ay-14); g.lineTo(ax-dir*62, ay+14); g.lineTo(ax-dir*10, ay+14);
-    g.lineTo(ax-dir*10, ay+38); g.closePath(); g.fill();
-    // 文字
+    g.moveTo(ax+dir*46, ay); g.lineTo(ax-dir*10, ay-44); g.lineTo(ax-dir*10, ay-16);
+    g.lineTo(ax-dir*62, ay-16); g.lineTo(ax-dir*62, ay+16); g.lineTo(ax-dir*10, ay+16);
+    g.lineTo(ax-dir*10, ay+44); g.closePath(); g.fill();
+    // 文字：兩行指引 + 下一行房名（大）
     const tx = arrowLeft ? 170 : 60, align='left';
     g.textAlign=align;
-    g.fillStyle='#ffffff'; g.font='bold 44px Arial';
-    g.fillText(line1, tx, h/2-14);
-    g.fillStyle=color; g.font='bold 40px Arial';
-    g.fillText(line2, tx, h/2+42);
+    g.fillStyle='#ffffff'; g.font='bold 36px Arial';
+    g.fillText(line1, tx, 62);
+    g.fillStyle='rgba(255,255,255,.75)'; g.font='32px Arial';
+    g.fillText(line2, tx, 112);
+    g.fillStyle=color; g.font='bold 64px Arial';
+    g.fillText(roomName, tx, 210);
   },1024,256);
-  const m = new THREE.Mesh(new THREE.PlaneGeometry(3.6,.9),
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(3.6,1.0),
     new THREE.MeshBasicMaterial({ map:t, transparent:true, side:THREE.DoubleSide }));
   m.position.set(x,2.3,z); m.rotation.y=rotY; scene.add(m);
 }
 // 左牆（紅藥丸側，企於大螢幕同紅門之間）：箭嘴指向 +z（本地 -x 方向）
-directionSign(-5.92,-2.7, Math.PI/2,'FOR CORPORATE PORTFOLIO','PLEASE ENTER THE RED PILL','#ff3346', true);
+directionSign(-5.92,-2.7, Math.PI/2,'FOR CORPORATE PORTFOLIO','PLEASE ENTER THE RED PILL','RED PILL GALLERY','#ff3346', true);
 // 右牆（藍藥丸側）
-directionSign( 5.92,-2.7,-Math.PI/2,'ARTIST PORTFOLIO','PLEASE ENTER THE BLUE PILL','#4a9bff', false);
+directionSign( 5.92,-2.7,-Math.PI/2,'ARTIST PORTFOLIO','PLEASE ENTER THE BLUE PILL','BLUE PILL LAB','#4a9bff', false);
 
 // ============ PLAYER CONTROLS ============
 const player = { x:0, z:3, yaw:0, pitch:0 };
@@ -552,26 +555,33 @@ addEventListener('pointermove', e => {
 });
 
 // ============ TOUCH CONTROLS (iPhone / Android) ============
-// 左半屏：虛擬 joystick（推前後=行、推左右=轉向）；右半屏：拖動環顧；輕點展品=開啟
+// 常駐半透明 joystick 喺左下角（唔使估）；右半屏拖動環顧；輕點展品=開啟
 const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 const joyBase = document.getElementById('joy-base');
 const joyKnob = document.getElementById('joy-knob');
+const lookHint = document.getElementById('look-hint');
 const joy = { x:0, y:0 }; // -1..1
 let moveT = null, lookT = null;
+let joyCX = 80, joyCY = 0; // joystick 固定中心（px）
 if (isTouch) {
   document.getElementById('controls-hint').textContent = 'LEFT THUMB: WALK & TURN · RIGHT THUMB: LOOK · TAP ARTWORK TO OPEN';
   document.getElementById('hud').textContent = '👈 WALK & TURN · LOOK 👉 · TAP ARTWORK';
+  joyBase.classList.add('fixed');
+  lookHint.style.display = 'block';
+  // 計算 joystick 中心座標（fixed 定位：left 80 / bottom 120）
+  const r = joyBase.getBoundingClientRect();
+  joyCX = r.left + r.width/2; joyCY = r.top + r.height/2;
+  setTimeout(() => lookHint.classList.add('gone'), 6000);
 }
 canvas.addEventListener('touchstart', e => {
   e.preventDefault();
   for (const t of e.changedTouches) {
     if (t.clientX < innerWidth*0.45 && !moveT) {
-      moveT = { id:t.identifier, x0:t.clientX, y0:t.clientY };
-      joyBase.style.display = 'block';
-      joyBase.style.left = t.clientX+'px'; joyBase.style.top = t.clientY+'px';
+      moveT = { id:t.identifier }; // 以固定 joystick 中心做基準
       joyKnob.style.transform = 'translate(-50%,-50%)';
     } else if (!lookT) {
       lookT = { id:t.identifier, x:t.clientX, y:t.clientY, moved:0, time:performance.now() };
+      lookHint.classList.add('gone');
     }
   }
 }, { passive:false });
@@ -579,7 +589,7 @@ canvas.addEventListener('touchmove', e => {
   e.preventDefault();
   for (const t of e.changedTouches) {
     if (moveT && t.identifier === moveT.id) {
-      const dx = t.clientX - moveT.x0, dy = t.clientY - moveT.y0;
+      const dx = t.clientX - joyCX, dy = t.clientY - joyCY;
       const len = Math.hypot(dx,dy), max = 48;
       const k = len > max ? max/len : 1;
       joy.x = (dx*k)/max; joy.y = (dy*k)/max;
@@ -595,7 +605,8 @@ canvas.addEventListener('touchmove', e => {
 canvas.addEventListener('touchend', e => {
   for (const t of e.changedTouches) {
     if (moveT && t.identifier === moveT.id) {
-      moveT = null; joy.x = 0; joy.y = 0; joyBase.style.display = 'none';
+      moveT = null; joy.x = 0; joy.y = 0;
+      joyKnob.style.transform = 'translate(-50%,-50%)'; // 常駐 joystick 唔會消失，knob 回中
     } else if (lookT && t.identifier === lookT.id) {
       // tap (短時間+少移動) → 開展品
       if (lookT.moved < 12 && performance.now() - lookT.time < 400) {
@@ -608,7 +619,7 @@ canvas.addEventListener('touchend', e => {
     }
   }
 }, { passive:false });
-canvas.addEventListener('touchcancel', () => { moveT=null; lookT=null; joy.x=0; joy.y=0; joyBase.style.display='none'; });
+canvas.addEventListener('touchcancel', () => { moveT=null; lookT=null; joy.x=0; joy.y=0; joyKnob.style.transform='translate(-50%,-50%)'; });
 
 // collision: room rects + door corridors
 const regions = [
@@ -710,6 +721,7 @@ loop();
 addEventListener('resize', () => {
   camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
+  if (isTouch) { const r = joyBase.getBoundingClientRect(); joyCX = r.left+r.width/2; joyCY = r.top+r.height/2; }
 });
 
 // Enter overlay
