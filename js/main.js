@@ -556,7 +556,7 @@ addEventListener('pointermove', e => {
 
 // ============ TOUCH CONTROLS (iPhone / Android) ============
 // 常駐半透明 joystick 喺左下角（唔使估）；右半屏拖動環顧；輕點展品=開啟
-const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || new URLSearchParams(location.search).has('touch');
 const joyBase = document.getElementById('joy-base');
 const joyKnob = document.getElementById('joy-knob');
 const lookHint = document.getElementById('look-hint');
@@ -576,7 +576,7 @@ if (isTouch) {
 canvas.addEventListener('touchstart', e => {
   e.preventDefault();
   for (const t of e.changedTouches) {
-    if (t.clientX < innerWidth*0.45 && !moveT) {
+    if (!moveT && (Math.hypot(t.clientX-joyCX, t.clientY-joyCY) < 90 || t.clientX < innerWidth*0.45)) {
       moveT = { id:t.identifier }; // 以固定 joystick 中心做基準
       joyKnob.style.transform = 'translate(-50%,-50%)';
     } else if (!lookT) {
