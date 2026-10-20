@@ -71,6 +71,11 @@
     font-size:11px; letter-spacing:.15em; pointer-events:none; text-shadow:0 1px 4px #000;
     transition:opacity 1s; display:none; text-align:center; line-height:1.7; }
   #look-hint.gone { opacity:0; }
+  /* Reception 歡迎提示字幕（喺房名下面，入其他房即消失） */
+  #welcome-sub { position:fixed; top:44px; left:50%; transform:translateX(-50%); z-index:20;
+    color:#bff3ff; font-size:13px; letter-spacing:.1em; text-align:center; line-height:1.8;
+    pointer-events:none; text-shadow:0 0 10px rgba(0,200,255,.8); transition:opacity .5s; }
+  #welcome-sub.gone { opacity:0; }
 </style>
 </head>
 <body>
@@ -84,6 +89,7 @@
 </div>
 
 <div id="room-label">RECEPTION</div>
+<div id="welcome-sub">Welcome to Man Chit's Portfolio Gallery ✦<br>◀ LEFT: Corporate Jobs Portfolio · RIGHT: Artist Lab ▶<br>Enjoy ~</div>
 <div id="crosshair"></div>
 <div id="interact-tip">CLICK TO OPEN</div>
 <div id="hud">↑↓ WALK · ←→ TURN · DRAG TO LOOK</div>

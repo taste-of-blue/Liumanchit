@@ -491,8 +491,8 @@ function buildTunnel(cx, style){
     tube.position.set(cx,1.6,0); scene.add(tube);
   }
 }
-buildTunnel(-7.5,'grid');  // Red Pill 門道（喺紅房嗰邊，Reception 見唔到）
-buildTunnel(7.5,'wave');   // Blue Pill 門道（喺藍洞穴嗰邊）
+// 走廊已移除（朋友試玩反饋：停留喺通道會迷茫）— 穿過藥丸直接入房
+// buildTunnel(-7.5,'grid'); buildTunnel(7.5,'wave');
 
 // room title signs (floating text planes)
 function sign(x, z, rotY, text, color) {
@@ -635,6 +635,7 @@ let lastRoom = 'RECEPTION';
 function roomOf(x,z){ if (x<-6.6) return 'RED PILL GALLERY'; if (x>6.6) return 'BLUE PILL LAB'; return 'RECEPTION'; }
 const fade = document.getElementById('fade');
 const roomLabel = document.getElementById('room-label');
+const welcomeSub = document.getElementById('welcome-sub');
 
 // ============ INTERACTION ============
 const raycaster = new THREE.Raycaster();
@@ -712,6 +713,8 @@ function loop(){
     lastRoom = room; roomLabel.textContent = room;
     fade.style.background = room==='RED PILL GALLERY' ? '#ff2244' : room==='BLUE PILL LAB' ? '#cc88ff' : '#ffffff';
     fade.style.opacity = .55; setTimeout(()=>fade.style.opacity=0, 180);
+    // 歡迎字幕只喺 Reception 顯示，入房即淡出
+    welcomeSub.classList.toggle('gone', room !== 'RECEPTION');
   }
   checkHover();
   renderer.render(scene, camera);
