@@ -79,8 +79,8 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x050508);
 const camera = new THREE.PerspectiveCamera(70, innerWidth/innerHeight, 0.1, 100);
 
-scene.add(new THREE.HemisphereLight(0xffffff, 0x334455, 1.1));
-const dir = new THREE.DirectionalLight(0xffffff, 0.8); dir.position.set(5,10,4); scene.add(dir);
+scene.add(new THREE.HemisphereLight(0xffe0c0, 0x334455, 0.75));
+const dir = new THREE.DirectionalLight(0xffd9b0, 0.55); dir.position.set(5,10,4); scene.add(dir);
 
 // Rooms geometry: Reception x[-6,6] z[-5,5]; Red x[-22,-6]; Blue x[6,22]; all z[-5,5], height 4
 const H = 4, interactives = [];
@@ -212,8 +212,8 @@ function buildRoom(cx, tex, doors, wallsTex=null) {
       }
       const lintel = new THREE.Mesh(new THREE.PlaneGeometry(2.4, H-3), mkWall(1,.3));
       lintel.position.set(x, 3+(H-3)/2, 0); lintel.rotation.y = side<0 ? Math.PI/2 : -Math.PI/2; g.add(lintel);
-      // glowing portal frame (only for doors without a solid pill portal)
-      if (!(side<0 && doors.includes('pill'))) {
+      // glowing portal frame (only for doors without a solid pill portal; 'plain' = 淨門框缺口)
+      if (!doors.includes('plain') && !(side<0 && doors.includes('pill'))) {
         const glow = new THREE.Mesh(new THREE.PlaneGeometry(2.4,3),
           new THREE.MeshBasicMaterial({ color: side<0 ? 0xff2244 : 0xcc88ff, transparent:true, opacity:.18, side:THREE.DoubleSide }));
         glow.position.set(x,1.5,0); glow.rotation.y = Math.PI/2; g.add(glow);
@@ -235,7 +235,21 @@ const plasterTex = canvasTexture((g,w,h)=>{ const gr=g.createLinearGradient(0,0,
 plasterTex.wrapS = plasterTex.wrapT = THREE.RepeatWrapping;
 
 buildRoom(0, whiteTex, ['left','right','pill'], rainWhite.tex);  // Reception — animated white rain walls
-buildRoom(-16, plasterTex, ['right']);         // Red Pill Gallery — gallery plaster walls
+buildRoom(-16, plasterTex, ['right','plain']); // Red Pill Gallery — 入口淨門洞，藥丸已係 portal
+// 紅房同 Reception 之間嘅真空位補上牆身/地/天花（x∈[-10,-6]），消除「走廊迷茫」
+{
+  const ftex = plasterTex.clone(); ftex.needsUpdate=true; ftex.repeat.set(1.2,3);
+  const f = new THREE.Mesh(new THREE.PlaneGeometry(4.2,10), new THREE.MeshStandardMaterial({ map:ftex, roughness:.9 }));
+  f.rotation.x=-Math.PI/2; f.position.set(-8.1,0,0); scene.add(f);
+  const c = new THREE.Mesh(new THREE.PlaneGeometry(4.2,10), wallMat(plasterTex,1.2,3));
+  c.rotation.x=Math.PI/2; c.position.set(-8.1,H,0); scene.add(c);
+  for (const z of [-5,5]) {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(4.2,H), wallMat(plasterTex,1.2,1));
+    m.position.set(-8.1,H/2,z); if (z>0) m.rotation.y=Math.PI; scene.add(m);
+  }
+  // 通道補光（暖白射燈感）
+  const wl = new THREE.PointLight(0xffe2c0, 10, 8); wl.position.set(-8,3.2,0); scene.add(wl);
+}
 // Blue Pill Lab → 自建有機洞穴（見下面 CAVE section，取代原本長方形房間）
 
 // ---- Pill portals: tall slim capsules (floor→ceiling), fast fibre rain (1.8x reception speed) — ref IMG_8165-2 ----
@@ -250,8 +264,8 @@ function pillPortal(x, rainTex, glowColor) {
 pillPortal(-6, rainRed.tex, 0xff2233);   // Red Pill Gallery portal
 pillPortal(6, rainBlue.tex, 0x4488ff);   // Blue Pill Lab portal
 
-// lights per room
-const pl1 = new THREE.PointLight(0xffffff, 60, 30); pl1.position.set(0,3.4,0); scene.add(pl1);
+// lights per room — Reception 用 TVA（Loki）暖琥珀光，避免白爆冚住字幕
+const pl1 = new THREE.PointLight(0xffb168, 42, 30); pl1.position.set(0,3.4,0); scene.add(pl1);
 const pl2 = new THREE.PointLight(0xdfeaf2, 14, 26); pl2.position.set(-16,2.4,0); scene.add(pl2);
 const pl3 = new THREE.PointLight(0x66ffe0, 45, 30); pl3.position.set(14,2.6,0); scene.add(pl3);
 const plPink = new THREE.PointLight(0xff77dd, 26, 15); plPink.position.set(14,3.3,0); scene.add(plPink); // 粉紅網布嘅光晕
@@ -636,6 +650,26 @@ function roomOf(x,z){ if (x<-6.6) return 'RED PILL GALLERY'; if (x>6.6) return '
 const fade = document.getElementById('fade');
 const roomLabel = document.getElementById('room-label');
 const welcomeSub = document.getElementById('welcome-sub');
+// 歡迎字幕：打字機逐隻字出現，三行分開依次播放（TVA 終端感）
+const WELCOME_LINES = [
+  "Welcome to Man Chit's Portfolio Gallery ✦",
+  "◀ LEFT: Corporate Jobs Portfolio · RIGHT: Artist Lab ▶",
+  "Enjoy ~"
+];
+let typeTimer = null;
+function playWelcome(){
+  const spans = [...welcomeSub.children];
+  spans.forEach(s => s.textContent = '');
+  clearTimeout(typeTimer);
+  let li = 0, ci = 0;
+  const step = () => {
+    if (li >= WELCOME_LINES.length) return;
+    spans[li].textContent = WELCOME_LINES[li].slice(0, ++ci);
+    if (ci >= WELCOME_LINES[li].length) { li++; ci = 0; typeTimer = setTimeout(step, 380); }
+    else typeTimer = setTimeout(step, 36);
+  };
+  step();
+}
 
 // ============ INTERACTION ============
 const raycaster = new THREE.Raycaster();
@@ -713,8 +747,9 @@ function loop(){
     lastRoom = room; roomLabel.textContent = room;
     fade.style.background = room==='RED PILL GALLERY' ? '#ff2244' : room==='BLUE PILL LAB' ? '#cc88ff' : '#ffffff';
     fade.style.opacity = .55; setTimeout(()=>fade.style.opacity=0, 180);
-    // 歡迎字幕只喺 Reception 顯示，入房即淡出
+    // 歡迎字幕只喺 Reception 顯示，入房即淡出；返返嚟重新打字
     welcomeSub.classList.toggle('gone', room !== 'RECEPTION');
+    if (room === 'RECEPTION') playWelcome();
   }
   checkHover();
   renderer.render(scene, camera);
@@ -730,9 +765,11 @@ addEventListener('resize', () => {
 // Enter overlay
 document.getElementById('enter-btn').onclick = () => {
   document.getElementById('enter-overlay').classList.add('hidden');
+  playWelcome(); // 正式進入先開始打字
 };
 if (new URLSearchParams(location.search).has('autoenter')) {
   document.getElementById('enter-overlay').style.display = 'none';
+  playWelcome();
 }
 // debug: ?px=-16&pz=0&yaw=0 to start elsewhere
 {
