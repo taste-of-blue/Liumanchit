@@ -517,19 +517,19 @@ function sign(x, z, rotY, text, color) {
 sign(0,4.9,Math.PI,'RECEPTION','#00ffff');
 sign(7.2,0,-Math.PI/2,'BLUE PILL LAB · TASTE OF BLUE','#9ff2e8');
 
-// ---- 浮動主題標籤：俾唔認識嘅觀眾離遠都睇到每個框講乜 ----
+// ---- 浮動主題標籤：俾唔認識嘅觀眾離遠都睇到每個框講乜（加大版：人類視感實測修正） ----
 function floatLabel(x,y,z,rotY,text,color='#9fe8ff'){
   const t = canvasTexture((g,w,h)=>{
     g.clearRect(0,0,w,h);
-    g.font='bold 44px Arial';
+    g.font='bold 60px Arial';
     const tw = g.measureText(text).width;
-    g.fillStyle='rgba(4,8,14,.6)';
-    g.beginPath(); g.roundRect(w/2-tw/2-24, h/2-38, tw+48, 76, 16); g.fill();
-    g.strokeStyle=color; g.lineWidth=3; g.stroke();
-    g.fillStyle=color; g.shadowColor=color; g.shadowBlur=12;
-    g.textAlign='center'; g.fillText(text, w/2, h/2+15);
-  },1024,128);
-  const m = new THREE.Mesh(new THREE.PlaneGeometry(2.7,.34),
+    g.fillStyle='rgba(4,8,14,.82)';                       // 深底加強圖底分離
+    g.beginPath(); g.roundRect(w/2-tw/2-30, h/2-52, tw+60, 104, 20); g.fill();
+    g.strokeStyle=color; g.lineWidth=5; g.stroke();
+    g.fillStyle=color; g.shadowColor=color; g.shadowBlur=20;  // 強霓虹 glow
+    g.textAlign='center'; g.fillText(text, w/2, h/2+21);
+  },1024,160);
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(3.4,.53),
     new THREE.MeshBasicMaterial({ map:t, transparent:true, side:THREE.DoubleSide }));
   m.position.set(x,y,z); m.rotation.y=rotY; scene.add(m);
 }
