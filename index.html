@@ -23,8 +23,8 @@
   /* HUD */
   #hud { position:fixed; left:0; right:0; bottom:14px; z-index:20; text-align:center; color:rgba(255,255,255,.55);
     font-size:11px; letter-spacing:.12em; pointer-events:none; text-shadow:0 1px 3px #000; }
-  #room-label { position:fixed; top:18px; left:50%; transform:translateX(-50%); z-index:20; color:rgba(255,255,255,.85);
-    font-size:13px; letter-spacing:.35em; pointer-events:none; text-shadow:0 0 12px rgba(0,200,255,.6); }
+  #room-label { position:fixed; top:18px; left:50%; transform:translateX(-50%); z-index:20; color:rgba(160,190,220,.6);
+    font-size:11px; letter-spacing:.35em; pointer-events:none; text-shadow:0 0 12px rgba(0,200,255,.4); }
   #crosshair { position:fixed; left:50%; top:50%; width:6px; height:6px; margin:-3px; border-radius:50%;
     background:rgba(255,255,255,.8); z-index:20; pointer-events:none; box-shadow:0 0 6px rgba(0,255,255,.8); }
   #interact-tip { position:fixed; left:50%; top:56%; transform:translateX(-50%); z-index:20; color:#0ff;
@@ -72,12 +72,17 @@
     transition:opacity 1s; display:none; text-align:center; line-height:1.7; }
   #look-hint.gone { opacity:0; }
   /* Reception 歡迎提示字幕（喺房名下面，入其他房即消失） */
-  #welcome-sub { position:fixed; top:44px; left:50%; transform:translateX(-50%); z-index:20;
-    color:#ffd9a0; font-family:'Courier New',monospace; font-weight:bold;
-    font-size:clamp(11px,2.6vw,14px); letter-spacing:.12em; text-align:center; line-height:1.9;
+  #welcome-sub { position:fixed; top:40px; left:50%; transform:translateX(-50%); z-index:20;
+    font-family:'Courier New',monospace; letter-spacing:.12em; text-align:center; line-height:2.0;
     pointer-events:none; transition:opacity .5s;
-    text-shadow:0 0 6px rgba(255,190,110,.9), 0 0 18px rgba(255,150,60,.55); }
-  #welcome-sub .wl { display:block; min-height:1.9em; }
+    background:rgba(4,8,14,.48); padding:10px 26px; border-radius:12px; }
+  #welcome-sub .wl { display:block; min-height:2.0em; }
+  /* 視覺層級：標題(大/粗/冰藍霓虹) > 指引(中/白) > 收尾(細/淡藍) */
+  #welcome-sub .wl:nth-child(1){ font-size:clamp(14px,3.4vw,17px); font-weight:bold; color:#9fe8ff;
+    text-shadow:0 0 8px rgba(80,200,255,.95), 0 0 22px rgba(60,170,255,.6); }
+  #welcome-sub .wl:nth-child(2){ font-size:clamp(11px,2.8vw,13px); color:#e8f6ff;
+    text-shadow:0 0 6px rgba(140,220,255,.7); }
+  #welcome-sub .wl:nth-child(3){ font-size:clamp(9px,2.4vw,11px); color:rgba(159,232,255,.6); }
   #welcome-sub.gone { opacity:0; }
 </style>
 </head>
