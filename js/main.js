@@ -517,56 +517,60 @@ function sign(x, z, rotY, text, color) {
 sign(0,4.9,Math.PI,'RECEPTION','#00ffff');
 sign(7.2,0,-Math.PI/2,'BLUE PILL LAB · TASTE OF BLUE','#9ff2e8');
 
-// ---- 浮動主題標籤：俾唔認識嘅觀眾離遠都睇到每個框講乜（加大版：人類視感實測修正） ----
-function floatLabel(x,y,z,rotY,text,color='#9fe8ff'){
+// ---- 浮動主題標籤（加大清晰版 + 浮動動畫）----
+const floaters = []; // 浮動標籤列表，loop 入面做 sine bob
+function floatLabel(x,y,z,rotY,text,color='#9fe8ff',S=1){
   const t = canvasTexture((g,w,h)=>{
     g.clearRect(0,0,w,h);
-    g.font='bold 60px Arial';
+    // 動態字體縮放：太長嘅字自動縮細確保一行擺晒
+    let fs = 64;
+    g.font=`bold ${fs}px Arial`;
+    while (g.measureText(text).width > w-140 && fs > 30){ fs -= 4; g.font=`bold ${fs}px Arial`; }
     const tw = g.measureText(text).width;
-    g.fillStyle='rgba(4,8,14,.82)';                       // 深底加強圖底分離
-    g.beginPath(); g.roundRect(w/2-tw/2-30, h/2-52, tw+60, 104, 20); g.fill();
-    g.strokeStyle=color; g.lineWidth=5; g.stroke();
-    g.fillStyle=color; g.shadowColor=color; g.shadowBlur=20;  // 強霓虹 glow
-    g.textAlign='center'; g.fillText(text, w/2, h/2+21);
-  },1024,160);
-  const m = new THREE.Mesh(new THREE.PlaneGeometry(3.4,.53),
+    g.fillStyle='rgba(4,8,14,.85)';                       // 深底加強圖底分離
+    g.beginPath(); g.roundRect(w/2-tw/2-36, h/2-56, tw+72, 112, 22); g.fill();
+    g.strokeStyle=color; g.lineWidth=6; g.stroke();
+    g.fillStyle=color; g.shadowColor=color; g.shadowBlur=22;  // 強霓虹 glow
+    g.textAlign='center'; g.fillText(text, w/2, h/2+23);
+  },1280,176);
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(4.0*S,.55*S),
     new THREE.MeshBasicMaterial({ map:t, transparent:true, side:THREE.DoubleSide }));
   m.position.set(x,y,z); m.rotation.y=rotY; scene.add(m);
+  floaters.push({ mesh:m, y0:y, phase:Math.random()*Math.PI*2 }); // 每塊相位唔同，唔會齊齊郁
 }
-// Blue Pill Lab（同 neonFrame 排位對應）
-floatLabel(20.2, 4.35, 0.0,  -Math.PI/2,      'INTERNATIONAL PERFORMANCE', '#ffaa33');
+// Blue Pill Lab（同 neonFrame 排位對應）；主角 HÖR 標籤加大 1.3 倍
+floatLabel(20.2, 4.35, 0.0,  -Math.PI/2,      'INTERNATIONAL PERFORMANCE', '#ffaa33', 1.3);
 floatLabel(17.6, 3.40, -2.9, -Math.PI/2+0.72, 'ASIA TOURING & FESTIVALS');
-floatLabel(17.6, 3.00,  2.9, -Math.PI/2-0.72, 'EVENTS & COLLABORATION');
+floatLabel(17.6, 3.00,  2.9, -Math.PI/2-0.72, 'EVENT HOST & ARTIST COLLABORATION');
 floatLabel(13.4, 3.00, -3.3, -Math.PI/2+0.95, 'MEDIA & PRESS');
-floatLabel(13.4, 3.00,  3.3, -Math.PI/2-0.95, 'CONTACT & LUCKY DRAW', '#cc88ff');
+floatLabel(13.4, 3.00,  3.3, -Math.PI/2-0.95, 'CONTACT FOR COLLABORATION & BOOKING', '#cc88ff');
 // Red Pill Gallery
-floatLabel(-16.5, 3.45, -1.6, Math.PI/2, 'APPLE STORE COLLABORATION', '#ffd9d9');
-floatLabel(-16.5, 3.45,  1.6, Math.PI/2, 'LUXURY BRAND CAMPAIGN', '#ffd9d9');
-floatLabel(-19.5, 3.60, -4.9, 0,        'BRAND FILM SOUND', '#ffd9d9');
-floatLabel(-12.8, 3.60, -4.9, 0,        'GAME TRAILER AUDIO', '#ffd9d9');
-floatLabel(-19.5, 3.60,  4.9, Math.PI,  'THEME PARK SOUND', '#ffd9d9');
-floatLabel(-12.8, 3.60,  4.9, Math.PI,  'FILM MUSIC PRODUCTION', '#ffd9d9');
+floatLabel(-16.5, 3.45, -1.6, Math.PI/2, 'APPLE STORE WORKSHOP', '#ffd9d9');
+floatLabel(-16.5, 3.45,  1.6, Math.PI/2, 'INTERNATIONAL BRAND MUSIC DESIGN', '#ffd9d9');
+floatLabel(-19.5, 3.60, -4.9, 0,        'HK-BASED INTERNATIONAL BRANDING SERVICE', '#ffd9d9');
+floatLabel(-12.8, 3.60, -4.9, 0,        'WEB3 GAME · MUSIC PRODUCTION', '#ffd9d9');
+floatLabel(-19.5, 3.60,  4.9, Math.PI,  'THEME PARK SOUND DESIGN CAMPAIGN', '#ffd9d9');
+floatLabel(-12.8, 3.60,  4.9, Math.PI,  'TV SERIES THEME SONG & END TRACK COMPOSITION', '#ffd9d9');
 
 // ---- 展品射燈光柱（ref: owner 提供嘅 spotlight 參考圖）— 純錐形 mesh，零素材成本 ----
-function spotCone(x, z, topY, color){
+// 主角 HÖR 光柱加粗加光（出眾感）
+function spotCone(x, z, topY, color, R=1.5, OP=.10){
   const cone = new THREE.Mesh(
-    new THREE.ConeGeometry(1.5, 2.6, 24, 1, true),
-    new THREE.MeshBasicMaterial({ color, transparent:true, opacity:.10,
+    new THREE.ConeGeometry(R, 2.6, 24, 1, true),
+    new THREE.MeshBasicMaterial({ color, transparent:true, opacity:OP,
       blending:THREE.AdditiveBlending, side:THREE.DoubleSide, depthWrite:false }));
   cone.position.set(x, topY-1.3, z); scene.add(cone);
   const lamp = new THREE.Mesh(new THREE.CircleGeometry(.16,20),
     new THREE.MeshBasicMaterial({ color:0xffffff }));
   lamp.rotation.x = Math.PI/2; lamp.position.set(x, topY-0.02, z); scene.add(lamp);
 }
-// Blue Pill Lab 五框（對應 neonFrame 位置）
-spotCone(20.2, 0.0, 5.6, 0xffaa33);
+// Blue Pill Lab 五框（對應 neonFrame 位置）；主角 HÖR 加粗加光
+spotCone(20.2, 0.0, 5.6, 0xffaa33, 2.1, .16);
 spotCone(17.6, -2.9, 4.9, 0x9fd4ff);
 spotCone(17.6,  2.9, 4.9, 0x9fd4ff);
 spotCone(13.4, -3.3, 4.6, 0x9fd4ff);
 spotCone(13.4,  3.3, 4.6, 0xcc88ff);
-// Red Pill Gallery 主框 + 掛牆
-for (const [x,z] of [[-16.5,-1.6],[-16.5,1.6],[-19.5,-4.9],[-12.8,-4.9],[-19.5,4.9],[-12.8,4.9]])
-  spotCone(x, z, 3.95, 0xfff2e0);
+// 紅房撤走可見光柱（白牆環境見柱唔專業；保留原本天花射燈照明）
 
 // ---- Reception 牆上指示牌：紅藍藥丸方向導引（第三行 = 房名，放大最搶眼） ----
 function directionSign(x, z, rotY, line1, line2, roomName, color, arrowLeft){
@@ -774,6 +778,12 @@ function loop(){
       p.setZ(i, Math.sin(bx*0.9+t*0.9)*0.35 + Math.cos(by*1.1+t*0.6)*0.3);
     }
     p.needsUpdate=true;
+  }
+  // 浮動標籤：sine 浮動 + 微彈（兩者之間嘅平衡），每塊相位錯開
+  {
+    const t = clock.elapsedTime;
+    for (const f of floaters)
+      f.mesh.position.y = f.y0 + Math.sin(t*1.1 + f.phase)*0.06 + Math.sin(t*2.3 + f.phase*2)*0.02;
   }
   const spd = 4*dt;
   let mx=0, mz=0;
