@@ -547,6 +547,27 @@ floatLabel(-12.8, 3.60, -4.9, 0,        'GAME TRAILER AUDIO', '#ffd9d9');
 floatLabel(-19.5, 3.60,  4.9, Math.PI,  'THEME PARK SOUND', '#ffd9d9');
 floatLabel(-12.8, 3.60,  4.9, Math.PI,  'FILM MUSIC PRODUCTION', '#ffd9d9');
 
+// ---- 展品射燈光柱（ref: owner 提供嘅 spotlight 參考圖）— 純錐形 mesh，零素材成本 ----
+function spotCone(x, z, topY, color){
+  const cone = new THREE.Mesh(
+    new THREE.ConeGeometry(1.5, 2.6, 24, 1, true),
+    new THREE.MeshBasicMaterial({ color, transparent:true, opacity:.10,
+      blending:THREE.AdditiveBlending, side:THREE.DoubleSide, depthWrite:false }));
+  cone.position.set(x, topY-1.3, z); scene.add(cone);
+  const lamp = new THREE.Mesh(new THREE.CircleGeometry(.16,20),
+    new THREE.MeshBasicMaterial({ color:0xffffff }));
+  lamp.rotation.x = Math.PI/2; lamp.position.set(x, topY-0.02, z); scene.add(lamp);
+}
+// Blue Pill Lab 五框（對應 neonFrame 位置）
+spotCone(20.2, 0.0, 5.6, 0xffaa33);
+spotCone(17.6, -2.9, 4.9, 0x9fd4ff);
+spotCone(17.6,  2.9, 4.9, 0x9fd4ff);
+spotCone(13.4, -3.3, 4.6, 0x9fd4ff);
+spotCone(13.4,  3.3, 4.6, 0xcc88ff);
+// Red Pill Gallery 主框 + 掛牆
+for (const [x,z] of [[-16.5,-1.6],[-16.5,1.6],[-19.5,-4.9],[-12.8,-4.9],[-19.5,4.9],[-12.8,4.9]])
+  spotCone(x, z, 3.95, 0xfff2e0);
+
 // ---- Reception 牆上指示牌：紅藍藥丸方向導引（第三行 = 房名，放大最搶眼） ----
 function directionSign(x, z, rotY, line1, line2, roomName, color, arrowLeft){
   const t = canvasTexture((g,w,h)=>{
