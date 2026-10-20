@@ -517,6 +517,36 @@ function sign(x, z, rotY, text, color) {
 sign(0,4.9,Math.PI,'RECEPTION','#00ffff');
 sign(7.2,0,-Math.PI/2,'BLUE PILL LAB · TASTE OF BLUE','#9ff2e8');
 
+// ---- 浮動主題標籤：俾唔認識嘅觀眾離遠都睇到每個框講乜 ----
+function floatLabel(x,y,z,rotY,text,color='#9fe8ff'){
+  const t = canvasTexture((g,w,h)=>{
+    g.clearRect(0,0,w,h);
+    g.font='bold 44px Arial';
+    const tw = g.measureText(text).width;
+    g.fillStyle='rgba(4,8,14,.6)';
+    g.beginPath(); g.roundRect(w/2-tw/2-24, h/2-38, tw+48, 76, 16); g.fill();
+    g.strokeStyle=color; g.lineWidth=3; g.stroke();
+    g.fillStyle=color; g.shadowColor=color; g.shadowBlur=12;
+    g.textAlign='center'; g.fillText(text, w/2, h/2+15);
+  },1024,128);
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(2.7,.34),
+    new THREE.MeshBasicMaterial({ map:t, transparent:true, side:THREE.DoubleSide }));
+  m.position.set(x,y,z); m.rotation.y=rotY; scene.add(m);
+}
+// Blue Pill Lab（同 neonFrame 排位對應）
+floatLabel(20.2, 4.35, 0.0,  -Math.PI/2,      'INTERNATIONAL PERFORMANCE', '#ffaa33');
+floatLabel(17.6, 3.40, -2.9, -Math.PI/2+0.72, 'ASIA TOURING & FESTIVALS');
+floatLabel(17.6, 3.00,  2.9, -Math.PI/2-0.72, 'EVENTS & COLLABORATION');
+floatLabel(13.4, 3.00, -3.3, -Math.PI/2+0.95, 'MEDIA & PRESS');
+floatLabel(13.4, 3.00,  3.3, -Math.PI/2-0.95, 'CONTACT & LUCKY DRAW', '#cc88ff');
+// Red Pill Gallery
+floatLabel(-16.5, 3.45, -1.6, Math.PI/2, 'APPLE STORE COLLABORATION', '#ffd9d9');
+floatLabel(-16.5, 3.45,  1.6, Math.PI/2, 'LUXURY BRAND CAMPAIGN', '#ffd9d9');
+floatLabel(-19.5, 3.60, -4.9, 0,        'BRAND FILM SOUND', '#ffd9d9');
+floatLabel(-12.8, 3.60, -4.9, 0,        'GAME TRAILER AUDIO', '#ffd9d9');
+floatLabel(-19.5, 3.60,  4.9, Math.PI,  'THEME PARK SOUND', '#ffd9d9');
+floatLabel(-12.8, 3.60,  4.9, Math.PI,  'FILM MUSIC PRODUCTION', '#ffd9d9');
+
 // ---- Reception 牆上指示牌：紅藍藥丸方向導引（第三行 = 房名，放大最搶眼） ----
 function directionSign(x, z, rotY, line1, line2, roomName, color, arrowLeft){
   const t = canvasTexture((g,w,h)=>{
