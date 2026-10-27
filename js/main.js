@@ -804,6 +804,13 @@ function loop(){
   camera.rotateY(player.yaw); camera.rotateX(player.pitch);
 
   const room = roomOf(player.x, player.z);
+  // BGM 音量 ease 漸變：入房 fade in、離房 fade out（Game Feel 緩動，唔會斷聲）
+  for (const k in bgmTracks){
+    const a = bgmTracks[k];
+    const target = (!bgmMuted && room === k) ? BGM_MAX : 0;
+    a.volume += (target - a.volume) * Math.min(1, dt*1.6);
+    if (a.volume < 0.005 && target === 0) a.volume = 0;
+  }
   if (room !== lastRoom){
     lastRoom = room; roomLabel.textContent = room;
     fade.style.background = room==='RED PILL GALLERY' ? '#ff2244' : room==='BLUE PILL LAB' ? '#cc88ff' : '#ffffff';
@@ -815,7 +822,6 @@ function loop(){
   checkHover();
   renderer.render(scene, camera);
 }
-loop();
 
 addEventListener('resize', () => {
   camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
@@ -823,9 +829,30 @@ addEventListener('resize', () => {
   if (isTouch) { const r = joyBase.getBoundingClientRect(); joyCX = r.left+r.width/2; joyCY = r.top+r.height/2; }
 });
 
+// ===== BGM 系統（每房氛圍音樂）=====
+// 設計原則：Game Feel — 音量用 ease 漸變，轉房時 crossfade 唔會斷聲；
+// Vercel 效能原則 — 純 HTMLAudio + AAC 128k，零額外 library。
+const bgmTracks = {
+  'RED PILL GALLERY': new Audio('assets/audio/red-room-bgm.m4a'),
+};
+const BGM_MAX = 0.55;
+let bgmMuted = false, audioUnlocked = false;
+for (const k in bgmTracks){ const a = bgmTracks[k]; a.loop = true; a.preload = 'auto'; a.volume = 0; }
+function unlockAudio(){
+  if (audioUnlocked) return; audioUnlocked = true;
+  for (const k in bgmTracks) bgmTracks[k].play().catch(()=>{});
+}
+const bgmBtn = document.getElementById('bgm-toggle');
+bgmBtn.onclick = (e) => {
+  e.stopPropagation();
+  bgmMuted = !bgmMuted;
+  bgmBtn.textContent = bgmMuted ? '🔇' : '🔊';
+};
+
 // Enter overlay
 document.getElementById('enter-btn').onclick = () => {
   document.getElementById('enter-overlay').classList.add('hidden');
+  unlockAudio(); // 首次互動 unlock 聲音（手機瀏覽器規定）
   playWelcome(); // 正式進入先開始打字
 };
 if (new URLSearchParams(location.search).has('autoenter')) {
@@ -839,3 +866,6 @@ if (new URLSearchParams(location.search).has('autoenter')) {
   if (q.has('pz')) player.z = parseFloat(q.get('pz'));
   if (q.has('pyaw')) player.yaw = parseFloat(q.get('pyaw'));
 }
+
+// 所有 const 初始化完先開始 render loop（避免 TDZ）
+loop();
