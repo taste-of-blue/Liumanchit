@@ -842,6 +842,7 @@ addEventListener('resize', () => {
 // Vercel 效能原則 — 純 HTMLAudio + AAC 128k，零額外 library。
 const bgmTracks = {
   'RED PILL GALLERY': new Audio('assets/audio/red-room-bgm.m4a'),
+  'BLUE PILL LAB': new Audio('assets/audio/blue-room-bgm.m4a'),
 };
 const BGM_MAX = 0.55;
 let bgmMuted = false, audioUnlocked = false;
