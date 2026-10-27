@@ -806,10 +806,18 @@ function loop(){
   const room = roomOf(player.x, player.z);
   // BGM 音量 ease 漸變：入房 fade in、離房 fade out（Game Feel 緩動，唔會斷聲）
   for (const k in bgmTracks){
-    const a = bgmTracks[k];
     const target = (!bgmMuted && room === k) ? BGM_MAX : 0;
-    a.volume += (target - a.volume) * Math.min(1, dt*1.6);
-    if (a.volume < 0.005 && target === 0) a.volume = 0;
+    const g = bgmGain[k];
+    if (g){
+      // Web Audio GainNode 路徑（iOS 都 work）
+      const v = g.gain.value + (target - g.gain.value) * Math.min(1, dt*1.6);
+      g.gain.value = (v < 0.005 && target === 0) ? 0 : v;
+    } else {
+      // fallback：舊瀏覽器冇 GainNode，用原生 volume（桌面得，iOS 會全音量）
+      const a = bgmTracks[k];
+      a.volume += (target - a.volume) * Math.min(1, dt*1.6);
+      if (a.volume < 0.005 && target === 0) a.volume = 0;
+    }
   }
   if (room !== lastRoom){
     lastRoom = room; roomLabel.textContent = room;
@@ -837,9 +845,23 @@ const bgmTracks = {
 };
 const BGM_MAX = 0.55;
 let bgmMuted = false, audioUnlocked = false;
-for (const k in bgmTracks){ const a = bgmTracks[k]; a.loop = true; a.preload = 'auto'; a.volume = 0; }
+for (const k in bgmTracks){ const a = bgmTracks[k]; a.loop = true; a.preload = 'auto'; }
+// iOS Safari 唔支援用程式碼調 HTMLAudio 嘅 volume（永遠係 1），
+// 所以要行 Web Audio API：MediaElementSource → GainNode → 喇叭，
+// fade in/out 喺 GainNode 度做，iPhone/桌面都一致。
+let actx = null; const bgmGain = {};
 function unlockAudio(){
   if (audioUnlocked) return; audioUnlocked = true;
+  try {
+    actx = new (window.AudioContext || window.webkitAudioContext)();
+    for (const k in bgmTracks){
+      const src = actx.createMediaElementSource(bgmTracks[k]);
+      const g = actx.createGain(); g.gain.value = 0;
+      src.connect(g); g.connect(actx.destination);
+      bgmGain[k] = g;
+    }
+    actx.resume();
+  } catch(e){ /* 舊瀏覽器 fallback：冇 fade，直接播 */ }
   for (const k in bgmTracks) bgmTracks[k].play().catch(()=>{});
 }
 const bgmBtn = document.getElementById('bgm-toggle');
