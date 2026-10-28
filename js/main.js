@@ -806,7 +806,7 @@ function loop(){
   const room = roomOf(player.x, player.z);
   // BGM 音量 ease 漸變：入房 fade in、離房 fade out（Game Feel 緩動，唔會斷聲）
   for (const k in bgmTracks){
-    const target = (!bgmMuted && room === k) ? BGM_MAX : 0;
+    const target = (!bgmMuted && room === k) ? BGM_MAX[k] : 0;
     const g = bgmGain[k];
     if (g){
       // Web Audio GainNode 路徑（iOS 都 work）
@@ -843,8 +843,10 @@ addEventListener('resize', () => {
 const bgmTracks = {
   'RED PILL GALLERY': new Audio('assets/audio/red-room-bgm.m4a'),
   'BLUE PILL LAB': new Audio('assets/audio/blue-room-bgm.m4a'),
+  'RECEPTION': new Audio('assets/audio/reception-bgm.m4a'),
 };
-const BGM_MAX = 0.55;
+// 每房最大音量：Reception 係 ambience 底聲，收細啲唔搶戲（圖底關係：音樂係底，內容係圖）
+const BGM_MAX = { 'RED PILL GALLERY': 0.55, 'BLUE PILL LAB': 0.55, 'RECEPTION': 0.3 };
 let bgmMuted = false, audioUnlocked = false;
 for (const k in bgmTracks){ const a = bgmTracks[k]; a.loop = true; a.preload = 'auto'; }
 // iOS Safari 唔支援用程式碼調 HTMLAudio 嘅 volume（永遠係 1），
