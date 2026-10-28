@@ -4,7 +4,7 @@ import * as THREE from 'three';
 const WORKS = {
   cv: { tag:'red', label:'CV — MAN CHIT LIU', title:'Curriculum Vitae',
     body:'Sound Designer · Music Producer\nClick below to view or download the PDF.',
-    links:[['📄 Open / Download CV (PDF)','assets/cv.pdf']] },
+    links:[['📄 Open / Download CV (PDF)','/assets/cv.pdf']] },
   r1: { tag:'red', label:'RED PILL GALLERY', title:'VANN JEWELRY — Brand Film Sound Design',
     body:'Role: Sound Designer & Composer\nTools: Ableton Live\n\nRetro-futuristic soundscape blending synthwave textures with futuristic techno, crafted in direct collaboration with the film director for precise audio-to-picture sync.',
     vids:['40yvHKSG2Zg'] },
@@ -18,8 +18,8 @@ const WORKS = {
     body:'Haunted-house theme park sound design across 21 zones (roller coaster, clown fun house, UV maze…).\n\n🚧 Exhibit under construction — coming soon.' },
   r5: { tag:'red', label:'RED PILL GALLERY · ALSO IN BLUE PILL LAB', title:'《你是你的傳奇》— Docudrama Theme & Ending Songs',
     body:'Client: Fame Universal Entertainment Limited\nRole: Music Producer & Supervisor\nRecorded at Zoo Studio · budget control · composition · arrangement · lyrics\nFeaturing Erhu by a Hong Kong Chinese Orchestra musician.',
-    audio:[['主題曲「水花」','assets/audio/docudrama-theme.mp3'],['Ending Song「Everybody like Kung Fu!」(working title)','assets/audio/docudrama-ending.mp3']],
-    links:[['📄 Credit List & Lyrics (PDF)','assets/credit.pdf']] },
+    audio:[['主題曲「水花」','/assets/audio/docudrama-theme.mp3'],['Ending Song「Everybody like Kung Fu!」(working title)','/assets/audio/docudrama-ending.mp3']],
+    links:[['📄 Credit List & Lyrics (PDF)','/assets/credit.pdf']] },
   r6: { tag:'red', label:'RED PILL GALLERY · HIGHLIGHT', title:'Apple Store Film Workshop —《Pride》MV',
     body:'Music Video for Taste of Blue —《Pride》(Original Mix)\nA collaboration with Hong Kong director Kitty Yang, who chose the first track of my debut album for this Apple Store film workshop piece.',
     vids:['YkDTNMo1kCY'],
@@ -33,7 +33,7 @@ const WORKS = {
   b2: { tag:'blue', label:'BLUE PILL LAB · LOCAL & ASIA', title:'Local & Asia — Clockenflap · China Tour · S2O · Taiwan',
     body:'International names catch the eye — but what I\'ve achieved as an Asia-based artist matters just as much.\n\nClockenflap live set, Taste of Blue Full China Tour 2024 (9 cities, November), S2O Festival HK, Taiwan mini tour incl. Kaohsiung Otobasho (rebooked).',
     vids:['o99esn5cZiQ'],
-    imgs:[['Taste of Blue — China Tour 2024 Poster','assets/china-tour-poster.jpg']],
+    imgs:[['Taste of Blue — China Tour 2024 Poster','/assets/china-tour-poster.jpg']],
     links:[['📸 China Tour 2024 Poster (IG)','https://www.instagram.com/p/DBQyaRYPaqs/'],
       ['🎬 Shanghai Stop Highlights (IG Reel)','https://www.instagram.com/reel/DB6lx2vvPeJ/'],
       ['🎬 S2O Festival HK Highlights (IG Reel)','https://www.instagram.com/reel/DaTZJuGzHPo/'],
@@ -62,12 +62,12 @@ const WORKS = {
 
 // 展框封面相（user 未撳入去之前見到嘅 image）
 const THUMBS = {
-  r1:'assets/thumbs/40yvHKSG2Zg.jpg', r2:'assets/thumbs/rcDyp2n9OGI.jpg',
-  r3:'assets/thumbs/mPEqpFp3q58.jpg', r4:'assets/thumbs/voodoo-boo.jpg',
-  r5:'assets/thumbs/docudrama.jpg',   r6:'assets/thumbs/apple-store-pride.jpg',
-  b1:'assets/thumbs/HGpJAA-Z8d0.jpg', b2:'assets/china-tour-poster.jpg',
-  b3:'assets/thumbs/ieJpklzCzlM.jpg', b4:'assets/thumbs/press-wall.jpg',
-  b5:'assets/thumbs/contact.jpg',
+  r1:'/assets/thumbs/40yvHKSG2Zg.jpg', r2:'/assets/thumbs/rcDyp2n9OGI.jpg',
+  r3:'/assets/thumbs/mPEqpFp3q58.jpg', r4:'/assets/thumbs/voodoo-boo.jpg',
+  r5:'/assets/thumbs/docudrama.jpg',   r6:'/assets/thumbs/apple-store-pride.jpg',
+  b1:'/assets/thumbs/HGpJAA-Z8d0.jpg', b2:'/assets/china-tour-poster.jpg',
+  b3:'/assets/thumbs/ieJpklzCzlM.jpg', b4:'/assets/thumbs/press-wall.jpg',
+  b5:'/assets/thumbs/contact.jpg',
 };
 
 // ============ SCENE SETUP ============
@@ -276,7 +276,7 @@ for (const lx of [10, 18]) { const l = new THREE.PointLight(0x66ffe0, 24, 14); l
 const screenMat = new THREE.MeshBasicMaterial({ color:0x220044 });
 const screenMesh = new THREE.Mesh(new THREE.PlaneGeometry(7,3.94), screenMat);
 screenMesh.position.set(0,2.0,-4.92); scene.add(screenMesh);
-new THREE.TextureLoader().load('assets/profile-screen.jpg',
+new THREE.TextureLoader().load('/assets/profile-screen.jpg',
   t => { t.colorSpace = THREE.SRGBColorSpace; screenMat.map = t; screenMat.color.set(0xffffff); screenMat.needsUpdate = true; },
   undefined,
   err => console.warn('profile texture failed', err));
@@ -841,9 +841,9 @@ addEventListener('resize', () => {
 // 設計原則：Game Feel — 音量用 ease 漸變，轉房時 crossfade 唔會斷聲；
 // Vercel 效能原則 — 純 HTMLAudio + AAC 128k，零額外 library。
 const bgmTracks = {
-  'RED PILL GALLERY': new Audio('assets/audio/red-room-bgm.m4a'),
-  'BLUE PILL LAB': new Audio('assets/audio/blue-room-bgm.m4a'),
-  'RECEPTION': new Audio('assets/audio/reception-bgm.m4a'),
+  'RED PILL GALLERY': new Audio('/assets/audio/red-room-bgm.m4a'),
+  'BLUE PILL LAB': new Audio('/assets/audio/blue-room-bgm.m4a'),
+  'RECEPTION': new Audio('/assets/audio/reception-bgm.m4a'),
 };
 // 每房最大音量：Reception 係 ambience 底聲，收細啲唔搶戲（圖底關係：音樂係底，內容係圖）
 const BGM_MAX = { 'RED PILL GALLERY': 0.55, 'BLUE PILL LAB': 0.55, 'RECEPTION': 0.3 };

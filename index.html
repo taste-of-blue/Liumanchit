@@ -1,131 +1,237 @@
 <!DOCTYPE html>
-<html lang="zh-HK">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Man Chit Liu — Digital Portfolio Space</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Man Chit Liu — Sound Designer & Music Producer</title>
+<meta name="description" content="Hong Kong-based Sound Designer & Music Producer. Brand audio, game trailers, film scoring — building multimedia experiences. Open to remote part-time opportunities.">
+<!-- LinkedIn / social preview -->
+<meta property="og:title" content="Man Chit Liu — Sound Designer & Music Producer">
+<meta property="og:description" content="Brand audio · Game trailers · Film scoring · Multimedia experiences. Based in Hong Kong, open to remote work.">
+<meta property="og:image" content="/assets/profile-screen.jpg">
+<meta property="og:type" content="website">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
-  html,body { width:100%; height:100%; overflow:hidden; background:#000; font-family:'Helvetica Neue',Arial,sans-serif; }
-  #scene-canvas { position:fixed; inset:0; display:block; touch-action:none; }
+  html { scroll-behavior:smooth; }
+  body { background:#0b0e14; color:#e8ecf1; font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+    line-height:1.6; -webkit-font-smoothing:antialiased; }
+  a { color:#6ec1ff; text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  .wrap { max-width:1080px; margin:0 auto; padding:0 24px; }
 
-  /* Enter overlay */
-  #enter-overlay { position:fixed; inset:0; z-index:50; background:radial-gradient(ellipse at center,#0a1628 0%,#000 100%);
-    display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fff; transition:opacity .8s; }
-  #enter-overlay.hidden { opacity:0; pointer-events:none; }
-  #enter-overlay h1 { font-size:clamp(20px,4vw,40px); letter-spacing:.35em; font-weight:200; margin-bottom:8px; }
-  #enter-overlay p.sub { font-size:13px; letter-spacing:.2em; color:#7fb3d9; margin-bottom:40px; }
-  #enter-btn { padding:14px 60px; font-size:16px; letter-spacing:.4em; color:#0ff; background:transparent;
-    border:1px solid #0ff; cursor:pointer; transition:all .3s; }
-  #enter-btn:hover { background:rgba(0,255,255,.15); box-shadow:0 0 30px rgba(0,255,255,.4); }
-  #enter-overlay p.hint { margin-top:40px; font-size:11px; color:#557; letter-spacing:.1em; }
+  /* Nav */
+  nav { position:sticky; top:0; z-index:50; background:rgba(11,14,20,.85); backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(255,255,255,.07); }
+  nav .wrap { display:flex; justify-content:space-between; align-items:center; padding-top:14px; padding-bottom:14px; }
+  nav .brand { font-weight:600; letter-spacing:.12em; font-size:14px; color:#fff; }
+  nav .links { display:flex; gap:22px; font-size:13px; }
+  nav .links a { color:rgba(232,236,241,.7); }
+  .btn-3d { border:1px solid #4a9bff; color:#4a9bff !important; padding:7px 16px; border-radius:999px;
+    font-weight:600; transition:all .25s; }
+  .btn-3d:hover { background:#4a9bff; color:#fff !important; text-decoration:none; box-shadow:0 0 18px rgba(74,155,255,.45); }
 
-  /* HUD */
-  #hud { position:fixed; left:0; right:0; bottom:14px; z-index:20; text-align:center; color:rgba(255,255,255,.55);
-    font-size:11px; letter-spacing:.12em; pointer-events:none; text-shadow:0 1px 3px #000; }
-  #room-label { position:fixed; top:18px; left:50%; transform:translateX(-50%); z-index:20; color:rgba(160,190,220,.6);
-    font-size:11px; letter-spacing:.35em; pointer-events:none; text-shadow:0 0 12px rgba(0,200,255,.4); }
-  #crosshair { position:fixed; left:50%; top:50%; width:6px; height:6px; margin:-3px; border-radius:50%;
-    background:rgba(255,255,255,.8); z-index:20; pointer-events:none; box-shadow:0 0 6px rgba(0,255,255,.8); }
-  #interact-tip { position:fixed; left:50%; top:56%; transform:translateX(-50%); z-index:20; color:#0ff;
-    font-size:12px; letter-spacing:.15em; pointer-events:none; display:none; text-shadow:0 0 8px #0ff; }
+  /* Hero */
+  header.hero { padding:96px 0 72px; text-align:center; }
+  .hero .kicker { font-size:12px; letter-spacing:.35em; color:#6ec1ff; text-transform:uppercase; margin-bottom:18px; }
+  .hero h1 { font-size:clamp(30px,5.4vw,52px); font-weight:700; letter-spacing:.01em; margin-bottom:16px; }
+  .hero .tagline { font-size:clamp(15px,2.4vw,19px); color:rgba(232,236,241,.72); max-width:640px; margin:0 auto 12px; }
+  .hero .status { display:inline-block; margin-top:14px; font-size:13px; color:#7ee2a8;
+    border:1px solid rgba(126,226,168,.35); padding:6px 16px; border-radius:999px; }
+  .hero .cta { margin-top:34px; display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+  .cta a { padding:13px 28px; border-radius:10px; font-size:14px; font-weight:600; letter-spacing:.04em; }
+  .cta .primary { background:#4a9bff; color:#fff; }
+  .cta .primary:hover { background:#63aeff; text-decoration:none; }
+  .cta .ghost { border:1px solid rgba(255,255,255,.25); color:#fff; }
+  .cta .ghost:hover { border-color:#fff; text-decoration:none; }
 
-  /* BGM mute toggle */
-  #bgm-toggle { position:fixed; top:14px; right:16px; z-index:25; background:rgba(10,15,25,.55); border:1px solid rgba(120,180,255,.35);
-    color:rgba(200,220,255,.85); font-size:15px; width:38px; height:38px; border-radius:50%; cursor:pointer;
-    backdrop-filter:blur(4px); transition:all .2s; }
-  #bgm-toggle:hover { border-color:rgba(120,180,255,.8); box-shadow:0 0 12px rgba(80,150,255,.35); }
+  /* Sections */
+  section { padding:64px 0; }
+  h2 { font-size:13px; letter-spacing:.3em; text-transform:uppercase; color:rgba(232,236,241,.5); margin-bottom:34px; }
+  h2::after { content:""; display:block; width:44px; height:2px; background:#4a9bff; margin-top:12px; }
 
-  /* Fade flash for portal transition */
-  #fade { position:fixed; inset:0; z-index:40; background:#fff; opacity:0; pointer-events:none; transition:opacity .35s; }
+  /* Works grid */
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:20px; }
+  .card { background:#12161f; border:1px solid rgba(255,255,255,.07); border-radius:14px; overflow:hidden;
+    transition:transform .25s, box-shadow .25s; display:block; color:inherit; }
+  .card:hover { transform:translateY(-4px); box-shadow:0 12px 32px rgba(0,0,0,.45); text-decoration:none;
+    border-color:rgba(110,193,255,.35); }
+  .card img { width:100%; aspect-ratio:16/9; object-fit:cover; display:block; background:#000; }
+  .card .body { padding:16px 18px 18px; }
+  .card .client { font-size:11px; letter-spacing:.18em; color:#6ec1ff; text-transform:uppercase; margin-bottom:6px; }
+  .card .title { font-size:16px; font-weight:600; margin-bottom:6px; color:#fff; }
+  .card .role { font-size:13px; color:rgba(232,236,241,.6); }
 
-  /* Modal */
-  #modal-wrap { position:fixed; inset:0; z-index:60; background:rgba(0,0,0,.75); display:none;
-    align-items:center; justify-content:center; padding:20px; }
-  #modal-wrap.open { display:flex; }
-  #modal { background:#0b1220; border:1px solid rgba(0,200,255,.35); border-radius:10px; max-width:760px; width:100%;
-    max-height:86vh; overflow-y:auto; padding:26px 28px; color:#dfe9f3; box-shadow:0 0 60px rgba(0,150,255,.25); }
-  #modal h2 { font-size:20px; letter-spacing:.08em; margin-bottom:4px; color:#fff; }
-  #modal .tag { display:inline-block; font-size:10px; letter-spacing:.2em; padding:3px 10px; border-radius:20px; margin-bottom:14px; }
-  .tag.red { background:rgba(255,60,80,.15); color:#ff6b7f; border:1px solid rgba(255,60,80,.4); }
-  .tag.blue { background:rgba(120,80,255,.18); color:#c9a8ff; border:1px solid rgba(160,110,255,.45); }
-  #modal p { font-size:13px; line-height:1.8; color:#aabbcc; margin-bottom:14px; white-space:pre-line; }
-  .vid { position:relative; width:100%; padding-bottom:56.25%; margin-bottom:14px; background:#000; border-radius:6px; overflow:hidden; }
-  .vid iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
-  audio { width:100%; margin-bottom:12px; }
-  .link-list a { display:block; color:#6fd3ff; font-size:13px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.08); text-decoration:none; }
-  .link-list a:hover { color:#fff; }
-  #modal-close { position:sticky; top:0; float:right; background:none; border:none; color:#8fa; font-size:22px; cursor:pointer; color:#7fb3d9; }
-  #modal-close:hover { color:#fff; }
-  .btn-row a { display:inline-block; margin:4px 8px 12px 0; padding:8px 18px; font-size:12px; letter-spacing:.1em;
-    border:1px solid rgba(0,200,255,.5); color:#6fd3ff; border-radius:4px; text-decoration:none; }
-  .btn-row a:hover { background:rgba(0,200,255,.15); }
+  /* Services */
+  .services { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
+  .svc { background:#12161f; border:1px solid rgba(255,255,255,.07); border-radius:14px; padding:22px; }
+  .svc .icon { font-size:22px; margin-bottom:10px; }
+  .svc h3 { font-size:15px; margin-bottom:6px; }
+  .svc p { font-size:13px; color:rgba(232,236,241,.6); }
 
-  /* Mobile joystick */
-  #joy-base { position:fixed; z-index:25; width:110px; height:110px; border-radius:50%;
-    border:2px solid rgba(0,255,255,.4); background:rgba(0,40,60,.25); display:none; pointer-events:none;
-    transform:translate(-50%,-50%); }
-  #joy-knob { position:absolute; left:50%; top:50%; width:46px; height:46px; border-radius:50%;
-    background:rgba(0,255,255,.5); box-shadow:0 0 14px rgba(0,255,255,.6); transform:translate(-50%,-50%); }
-  /* 常駐 joystick（手機版）：左下角固定、半透明、附方向箭咀同標籤 */
-  #joy-base.fixed { display:block; left:50%; top:auto; bottom:120px; transform:translateX(-50%); opacity:.65; }
-  #joy-base .joy-arrow { position:absolute; color:rgba(180,255,255,.85); font-size:14px; text-shadow:0 0 6px rgba(0,255,255,.8); }
-  #joy-base .joy-label { position:absolute; left:50%; top:118px; transform:translateX(-50%);
-    color:rgba(255,255,255,.6); font-size:10px; letter-spacing:.15em; white-space:nowrap; }
-  /* 環顧提示水印（手機版右側，首次拖動或 6 秒後淡出） */
-  #look-hint { position:fixed; right:18px; bottom:130px; z-index:20; color:rgba(255,255,255,.65);
-    font-size:11px; letter-spacing:.15em; pointer-events:none; text-shadow:0 1px 4px #000;
-    transition:opacity 1s; display:none; text-align:center; line-height:1.7; }
-  #look-hint.gone { opacity:0; }
-  /* Reception 歡迎提示字幕（喺房名下面，入其他房即消失） */
-  #welcome-sub { position:fixed; top:40px; left:50%; transform:translateX(-50%); z-index:20;
-    font-family:'Courier New',monospace; letter-spacing:.12em; text-align:center; line-height:2.0;
-    pointer-events:none; transition:opacity .5s;
-    background:rgba(4,8,14,.48); padding:10px 26px; border-radius:12px; }
-  #welcome-sub .wl { display:block; min-height:2.0em; white-space:nowrap; }
-  /* 視覺層級：標題(大/粗/冰藍霓虹) > 指引(中/白) > 收尾(細/淡藍) */
-  #welcome-sub .wl:nth-child(1){ font-size:clamp(14px,3.4vw,17px); font-weight:bold; color:#9fe8ff;
-    text-shadow:0 0 8px rgba(80,200,255,.95), 0 0 22px rgba(60,170,255,.6); }
-  #welcome-sub .wl:nth-child(2){ font-size:clamp(11px,2.8vw,13px); color:#e8f6ff;
-    text-shadow:0 0 6px rgba(140,220,255,.7); }
-  #welcome-sub .wl:nth-child(3){ font-size:clamp(9px,2.4vw,11px); color:rgba(159,232,255,.6); }
-  /* 手機版：字再縮細，等三行都唔使摺行、字幕盒拉返闊 */
-  @media (max-width:520px){
-    #welcome-sub { top:36px; padding:8px 12px; }
-    #welcome-sub .wl:nth-child(1){ font-size:13px; letter-spacing:.06em; }
-    #welcome-sub .wl:nth-child(2){ font-size:9.5px; letter-spacing:.03em; }
-    #welcome-sub .wl:nth-child(3){ font-size:9.5px; }
-  }
-  #welcome-sub.gone { opacity:0; }
+  /* Experience timeline */
+  .xp { border-left:2px solid rgba(110,193,255,.25); padding-left:26px; }
+  .xp .item { margin-bottom:26px; position:relative; }
+  .xp .item::before { content:""; position:absolute; left:-33px; top:6px; width:10px; height:10px;
+    border-radius:50%; background:#4a9bff; box-shadow:0 0 10px rgba(74,155,255,.6); }
+  .xp .what { font-weight:600; font-size:15px; }
+  .xp .who { font-size:13px; color:#6ec1ff; margin:2px 0 4px; }
+  .xp .desc { font-size:13.5px; color:rgba(232,236,241,.65); }
+
+  /* Press */
+  .press { display:flex; flex-wrap:wrap; gap:12px; }
+  .press a { border:1px solid rgba(255,255,255,.14); border-radius:999px; padding:8px 18px; font-size:13px;
+    color:rgba(232,236,241,.8); transition:all .2s; }
+  .press a:hover { border-color:#6ec1ff; color:#fff; text-decoration:none; }
+
+  /* Contact */
+  .contact { text-align:center; }
+  .contact p.big { font-size:clamp(20px,3.4vw,28px); font-weight:600; margin-bottom:22px; }
+  .contact .row { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+  .contact .row a { border:1px solid rgba(255,255,255,.2); border-radius:10px; padding:12px 24px;
+    font-size:14px; color:#fff; }
+  .contact .row a:hover { border-color:#6ec1ff; text-decoration:none; }
+
+  footer { border-top:1px solid rgba(255,255,255,.07); padding:30px 0 44px; text-align:center;
+    font-size:12px; color:rgba(232,236,241,.4); }
+  @media (max-width:560px){ nav .links { gap:14px; font-size:12px; } header.hero { padding:64px 0 52px; } }
 </style>
 </head>
 <body>
-<canvas id="scene-canvas"></canvas>
 
-<div id="enter-overlay">
-  <h1>MAN CHIT LIU</h1>
-  <p class="sub">SOUND DESIGN · MUSIC PRODUCTION · TASTE OF BLUE</p>
-  <button id="enter-btn">ENTER</button>
-  <p class="hint" id="controls-hint">↑↓ WALK · ←→ TURN · DRAG TO LOOK · CLICK GLOWING PANELS</p>
-</div>
-
-<div id="room-label">RECEPTION</div>
-<button id="bgm-toggle" title="Music on/off">🔊</button>
-<div id="welcome-sub"><span class="wl"></span><span class="wl"></span><span class="wl"></span></div>
-<div id="crosshair"></div>
-<div id="interact-tip">CLICK TO OPEN</div>
-<div id="hud">↑↓ WALK · ←→ TURN · DRAG TO LOOK</div>
-<div id="joy-base"><span class="joy-arrow" style="left:50%;top:5px;transform:translateX(-50%)">▲</span><span class="joy-arrow" style="left:50%;bottom:5px;transform:translateX(-50%)">▼</span><span class="joy-arrow" style="left:7px;top:50%;transform:translateY(-50%)">◀</span><span class="joy-arrow" style="right:7px;top:50%;transform:translateY(-50%)">▶</span><div id="joy-knob"></div><span class="joy-label">WALK · TURN</span></div>
-<div id="look-hint">👁<br>DRAG<br>TO LOOK</div>
-<div id="fade"></div>
-
-<div id="modal-wrap">
-  <div id="modal">
-    <button id="modal-close">✕</button>
-    <div id="modal-content"></div>
+<nav>
+  <div class="wrap">
+    <div class="brand">MAN CHIT LIU</div>
+    <div class="links">
+      <a href="#works">Works</a>
+      <a href="#services">Services</a>
+      <a href="#experience">Experience</a>
+      <a href="#contact">Contact</a>
+      <a href="/world/" class="btn-3d">✦ 3D World</a>
+    </div>
   </div>
-</div>
+</nav>
 
-<script type="module" src="js/main.js"></script>
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">Hong Kong · Open to Remote</div>
+    <h1>Sound Designer &amp; Music Producer</h1>
+    <p class="tagline">Building multimedia experiences — brand sound, game trailers, film scoring,
+      and interactive audio-visual worlds.</p>
+    <div class="status">● Available for part-time / remote projects</div>
+    <div class="cta">
+      <a href="/assets/cv.pdf" class="primary">📄 Download CV</a>
+      <a href="/world/" class="ghost">🎮 Enter the 3D World</a>
+    </div>
+  </div>
+</header>
+
+<section id="works">
+  <div class="wrap">
+    <h2>Selected Works</h2>
+    <div class="grid">
+      <a class="card" href="https://www.youtube.com/watch?v=mPEqpFp3q58" target="_blank" rel="noopener">
+        <img src="/assets/thumbs/mPEqpFp3q58.jpg" alt="MOSCHINO Year of the Tiger campaign">
+        <div class="body"><div class="client">MOSCHINO</div>
+          <div class="title">Year of the Tiger Campaign</div>
+          <div class="role">Composer &amp; Audio Producer — campaign BGM production &amp; arrangement</div></div>
+      </a>
+      <a class="card" href="https://www.youtube.com/watch?v=40yvHKSG2Zg" target="_blank" rel="noopener">
+        <img src="/assets/thumbs/40yvHKSG2Zg.jpg" alt="VANN Jewelry brand film">
+        <div class="body"><div class="client">VANN JEWELRY</div>
+          <div class="title">Brand Film Sound Design</div>
+          <div class="role">Sound Designer &amp; Composer — retro-futuristic soundscape, audio-to-picture sync</div></div>
+      </a>
+      <a class="card" href="https://www.youtube.com/watch?v=rcDyp2n9OGI" target="_blank" rel="noopener">
+        <img src="/assets/thumbs/rcDyp2n9OGI.jpg" alt="Age of Tanks game trailer">
+        <div class="body"><div class="client">AGE OF TANKS · DEFNITION (SG)</div>
+          <div class="title">Official Game Trailer Audio</div>
+          <div class="role">Sound Designer &amp; Composer — original SFX, foley, cinematic orchestration</div></div>
+      </a>
+      <a class="card" href="/world/" target="_blank" rel="noopener">
+        <img src="/assets/thumbs/docudrama.jpg" alt="Docudrama theme song production">
+        <div class="body"><div class="client">FAME UNIVERSAL ENTERTAINMENT</div>
+          <div class="title">《你是你的傳奇》Docudrama</div>
+          <div class="role">Music Producer &amp; Supervisor — theme &amp; ending songs, HKCO erhu collaboration</div></div>
+      </a>
+      <a class="card" href="https://youtu.be/YkDTNMo1kCY" target="_blank" rel="noopener">
+        <img src="/assets/thumbs/apple-store-pride.jpg" alt="Apple Store film workshop — Pride MV">
+        <div class="body"><div class="client">APPLE STORE FILM WORKSHOP</div>
+          <div class="title">《Pride》Music Video — dir. Kitty Yang</div>
+          <div class="role">Featured track from debut album, shot-on-iPhone workshop collaboration</div></div>
+      </a>
+      <a class="card" href="/world/" target="_blank" rel="noopener">
+        <img src="/assets/thumbs/voodoo-boo.jpg" alt="VOODOO BOO theme park sound design">
+        <div class="body"><div class="client">VOODOO BOO PARK</div>
+          <div class="title">Haunted Theme Park Sound Design</div>
+          <div class="role">Sound design across 21 themed zones — rides, fun house, UV maze</div></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="services">
+  <div class="wrap">
+    <h2>What I Can Do For You</h2>
+    <div class="services">
+      <div class="svc"><div class="icon">🎬</div><h3>Brand &amp; Campaign Audio</h3>
+        <p>BGM, sonic branding and sound design for commercials and fashion campaigns.</p></div>
+      <div class="svc"><div class="icon">🎮</div><h3>Game &amp; Trailer Sound</h3>
+        <p>Original SFX, foley and cinematic scores for games, trailers and interactive media.</p></div>
+      <div class="svc"><div class="icon">🎵</div><h3>Music Production</h3>
+        <p>Composition, arrangement and production from demo to release-ready masters.</p></div>
+      <div class="svc"><div class="icon">🌐</div><h3>Multimedia Experiences</h3>
+        <p>Audio-visual content and interactive web experiences — like the 3D world on this site.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="wrap">
+    <h2>Highlights</h2>
+    <div class="xp">
+      <div class="item"><div class="what">International brand campaigns</div>
+        <div class="who">MOSCHINO · VANN Jewelry</div>
+        <div class="desc">Music production and sound design for global fashion brands, working directly with directors on picture sync.</div></div>
+      <div class="item"><div class="what">Game &amp; Web3 audio</div>
+        <div class="who">Age of Tanks — Defnition (Singapore)</div>
+        <div class="desc">Full trailer audio production for an international Web3 game client, delivered remotely.</div></div>
+      <div class="item"><div class="what">Film &amp; TV music</div>
+        <div class="who">Fame Universal Entertainment</div>
+        <div class="desc">Produced and supervised theme &amp; ending songs for a docudrama, including collaboration with a Hong Kong Chinese Orchestra erhu player.</div></div>
+      <div class="item"><div class="what">Independent music project — Taste of Blue</div>
+        <div class="who">Founder / Producer (self-directed)</div>
+        <div class="desc">End-to-end delivery from production to release: vinyl release, China tour (9 cities), Clockenflap &amp; S2O festival sets, and press coverage in Mixmag Asia, Esquire HK and HK01.</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="press">
+  <div class="wrap">
+    <h2>Press</h2>
+    <div class="press">
+      <a href="https://mixmag.asia/feature/artists-exciting-us-in-2024-august" target="_blank" rel="noopener">Mixmag Asia — Artists Exciting Us 2024</a>
+      <a href="https://mixmag.asia/read/taste-of-blue-china-tour-whole-month-of-november-local" target="_blank" rel="noopener">Mixmag Asia — China Tour</a>
+      <a href="https://www.esquirehk.com/lifestyle/taste-of-blue" target="_blank" rel="noopener">Esquire HK</a>
+      <a href="https://www.hk01.com/%E7%9C%BE%E6%A8%82%E8%BF%B7/854977/" target="_blank" rel="noopener">HK01 — 值得留意的香港電子音樂人</a>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="contact">
+  <div class="wrap">
+    <h2 style="text-align:center">Get In Touch</h2>
+    <p class="big">Let's make something sound incredible.</p>
+    <div class="row">
+      <a href="https://www.instagram.com/taste_of_blue" target="_blank" rel="noopener">📷 Instagram</a>
+      <a href="tel:+85263397327">📱 +852 6339 7327</a>
+      <a href="/assets/cv.pdf">📄 CV (PDF)</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">© 2026 Man Chit Liu · Hong Kong · <a href="/world/">Enter the 3D World ✦</a></div>
+</footer>
+
 </body>
 </html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Man Chit Liu — Digital Portfolio Space</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { width:100%; height:100%; overflow:hidden; background:#000; font-family:'Helvetica Neue',Arial,sans-serif; }
+  #scene-canvas { position:fixed; inset:0; display:block; touch-action:none; }
+
+  /* Enter overlay */
+  #enter-overlay { position:fixed; inset:0; z-index:50; background:radial-gradient(ellipse at center,#0a1628 0%,#000 100%);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fff; transition:opacity .8s; }
+  #enter-overlay.hidden { opacity:0; pointer-events:none; }
+  #enter-overlay h1 { font-size:clamp(20px,4vw,40px); letter-spacing:.35em; font-weight:200; margin-bottom:8px; }
+  #enter-overlay p.sub { font-size:13px; letter-spacing:.2em; color:#7fb3d9; margin-bottom:40px; }
+  #enter-btn { padding:14px 60px; font-size:16px; letter-spacing:.4em; color:#0ff; background:transparent;
+    border:1px solid #0ff; cursor:pointer; transition:all .3s; }
+  #enter-btn:hover { background:rgba(0,255,255,.15); box-shadow:0 0 30px rgba(0,255,255,.4); }
+  #enter-overlay p.hint { margin-top:40px; font-size:11px; color:#557; letter-spacing:.1em; }
+
+  /* HUD */
+  #hud { position:fixed; left:0; right:0; bottom:14px; z-index:20; text-align:center; color:rgba(255,255,255,.55);
+    font-size:11px; letter-spacing:.12em; pointer-events:none; text-shadow:0 1px 3px #000; }
+  #room-label { position:fixed; top:18px; left:50%; transform:translateX(-50%); z-index:20; color:rgba(160,190,220,.6);
+    font-size:11px; letter-spacing:.35em; pointer-events:none; text-shadow:0 0 12px rgba(0,200,255,.4); }
+  #crosshair { position:fixed; left:50%; top:50%; width:6px; height:6px; margin:-3px; border-radius:50%;
+    background:rgba(255,255,255,.8); z-index:20; pointer-events:none; box-shadow:0 0 6px rgba(0,255,255,.8); }
+  #interact-tip { position:fixed; left:50%; top:56%; transform:translateX(-50%); z-index:20; color:#0ff;
+    font-size:12px; letter-spacing:.15em; pointer-events:none; display:none; text-shadow:0 0 8px #0ff; }
+
+  /* BGM mute toggle */
+  #bgm-toggle { position:fixed; top:14px; right:16px; z-index:25; background:rgba(10,15,25,.55); border:1px solid rgba(120,180,255,.35);
+    color:rgba(200,220,255,.85); font-size:15px; width:38px; height:38px; border-radius:50%; cursor:pointer;
+    backdrop-filter:blur(4px); transition:all .2s; }
+  #bgm-toggle:hover { border-color:rgba(120,180,255,.8); box-shadow:0 0 12px rgba(80,150,255,.35); }
+
+  /* Back to portfolio home */
+  #home-link { position:fixed; top:14px; left:16px; z-index:25; background:rgba(10,15,25,.55); border:1px solid rgba(120,180,255,.35);
+    color:rgba(200,220,255,.85); font-size:11px; letter-spacing:.12em; padding:10px 14px; border-radius:999px;
+    text-decoration:none; backdrop-filter:blur(4px); transition:all .2s; font-family:'Helvetica Neue',Arial,sans-serif; }
+  #home-link:hover { border-color:rgba(120,180,255,.8); box-shadow:0 0 12px rgba(80,150,255,.35); color:#fff; }
+
+  /* Fade flash for portal transition */
+  #fade { position:fixed; inset:0; z-index:40; background:#fff; opacity:0; pointer-events:none; transition:opacity .35s; }
+
+  /* Modal */
+  #modal-wrap { position:fixed; inset:0; z-index:60; background:rgba(0,0,0,.75); display:none;
+    align-items:center; justify-content:center; padding:20px; }
+  #modal-wrap.open { display:flex; }
+  #modal { background:#0b1220; border:1px solid rgba(0,200,255,.35); border-radius:10px; max-width:760px; width:100%;
+    max-height:86vh; overflow-y:auto; padding:26px 28px; color:#dfe9f3; box-shadow:0 0 60px rgba(0,150,255,.25); }
+  #modal h2 { font-size:20px; letter-spacing:.08em; margin-bottom:4px; color:#fff; }
+  #modal .tag { display:inline-block; font-size:10px; letter-spacing:.2em; padding:3px 10px; border-radius:20px; margin-bottom:14px; }
+  .tag.red { background:rgba(255,60,80,.15); color:#ff6b7f; border:1px solid rgba(255,60,80,.4); }
+  .tag.blue { background:rgba(120,80,255,.18); color:#c9a8ff; border:1px solid rgba(160,110,255,.45); }
+  #modal p { font-size:13px; line-height:1.8; color:#aabbcc; margin-bottom:14px; white-space:pre-line; }
+  .vid { position:relative; width:100%; padding-bottom:56.25%; margin-bottom:14px; background:#000; border-radius:6px; overflow:hidden; }
+  .vid iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
+  audio { width:100%; margin-bottom:12px; }
+  .link-list a { display:block; color:#6fd3ff; font-size:13px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.08); text-decoration:none; }
+  .link-list a:hover { color:#fff; }
+  #modal-close { position:sticky; top:0; float:right; background:none; border:none; color:#8fa; font-size:22px; cursor:pointer; color:#7fb3d9; }
+  #modal-close:hover { color:#fff; }
+  .btn-row a { display:inline-block; margin:4px 8px 12px 0; padding:8px 18px; font-size:12px; letter-spacing:.1em;
+    border:1px solid rgba(0,200,255,.5); color:#6fd3ff; border-radius:4px; text-decoration:none; }
+  .btn-row a:hover { background:rgba(0,200,255,.15); }
+
+  /* Mobile joystick */
+  #joy-base { position:fixed; z-index:25; width:110px; height:110px; border-radius:50%;
+    border:2px solid rgba(0,255,255,.4); background:rgba(0,40,60,.25); display:none; pointer-events:none;
+    transform:translate(-50%,-50%); }
+  #joy-knob { position:absolute; left:50%; top:50%; width:46px; height:46px; border-radius:50%;
+    background:rgba(0,255,255,.5); box-shadow:0 0 14px rgba(0,255,255,.6); transform:translate(-50%,-50%); }
+  /* 常駐 joystick（手機版）：左下角固定、半透明、附方向箭咀同標籤 */
+  #joy-base.fixed { display:block; left:50%; top:auto; bottom:120px; transform:translateX(-50%); opacity:.65; }
+  #joy-base .joy-arrow { position:absolute; color:rgba(180,255,255,.85); font-size:14px; text-shadow:0 0 6px rgba(0,255,255,.8); }
+  #joy-base .joy-label { position:absolute; left:50%; top:118px; transform:translateX(-50%);
+    color:rgba(255,255,255,.6); font-size:10px; letter-spacing:.15em; white-space:nowrap; }
+  /* 環顧提示水印（手機版右側，首次拖動或 6 秒後淡出） */
+  #look-hint { position:fixed; right:18px; bottom:130px; z-index:20; color:rgba(255,255,255,.65);
+    font-size:11px; letter-spacing:.15em; pointer-events:none; text-shadow:0 1px 4px #000;
+    transition:opacity 1s; display:none; text-align:center; line-height:1.7; }
+  #look-hint.gone { opacity:0; }
+  /* Reception 歡迎提示字幕（喺房名下面，入其他房即消失） */
+  #welcome-sub { position:fixed; top:40px; left:50%; transform:translateX(-50%); z-index:20;
+    font-family:'Courier New',monospace; letter-spacing:.12em; text-align:center; line-height:2.0;
+    pointer-events:none; transition:opacity .5s;
+    background:rgba(4,8,14,.48); padding:10px 26px; border-radius:12px; }
+  #welcome-sub .wl { display:block; min-height:2.0em; white-space:nowrap; }
+  /* 視覺層級：標題(大/粗/冰藍霓虹) > 指引(中/白) > 收尾(細/淡藍) */
+  #welcome-sub .wl:nth-child(1){ font-size:clamp(14px,3.4vw,17px); font-weight:bold; color:#9fe8ff;
+    text-shadow:0 0 8px rgba(80,200,255,.95), 0 0 22px rgba(60,170,255,.6); }
+  #welcome-sub .wl:nth-child(2){ font-size:clamp(11px,2.8vw,13px); color:#e8f6ff;
+    text-shadow:0 0 6px rgba(140,220,255,.7); }
+  #welcome-sub .wl:nth-child(3){ font-size:clamp(9px,2.4vw,11px); color:rgba(159,232,255,.6); }
+  /* 手機版：字再縮細，等三行都唔使摺行、字幕盒拉返闊 */
+  @media (max-width:520px){
+    #welcome-sub { top:36px; padding:8px 12px; }
+    #welcome-sub .wl:nth-child(1){ font-size:13px; letter-spacing:.06em; }
+    #welcome-sub .wl:nth-child(2){ font-size:9.5px; letter-spacing:.03em; }
+    #welcome-sub .wl:nth-child(3){ font-size:9.5px; }
+  }
+  #welcome-sub.gone { opacity:0; }
+</style>
+</head>
+<body>
+<canvas id="scene-canvas"></canvas>
+
+<div id="enter-overlay">
+  <h1>MAN CHIT LIU</h1>
+  <p class="sub">SOUND DESIGN · MUSIC PRODUCTION · TASTE OF BLUE</p>
+  <button id="enter-btn">ENTER</button>
+  <p class="hint" id="controls-hint">↑↓ WALK · ←→ TURN · DRAG TO LOOK · CLICK GLOWING PANELS</p>
+</div>
+
+<div id="room-label">RECEPTION</div>
+<button id="bgm-toggle" title="Music on/off">🔊</button>
+<a id="home-link" href="/">← PORTFOLIO</a>
+<div id="welcome-sub"><span class="wl"></span><span class="wl"></span><span class="wl"></span></div>
+<div id="crosshair"></div>
+<div id="interact-tip">CLICK TO OPEN</div>
+<div id="hud">↑↓ WALK · ←→ TURN · DRAG TO LOOK</div>
+<div id="joy-base"><span class="joy-arrow" style="left:50%;top:5px;transform:translateX(-50%)">▲</span><span class="joy-arrow" style="left:50%;bottom:5px;transform:translateX(-50%)">▼</span><span class="joy-arrow" style="left:7px;top:50%;transform:translateY(-50%)">◀</span><span class="joy-arrow" style="right:7px;top:50%;transform:translateY(-50%)">▶</span><div id="joy-knob"></div><span class="joy-label">WALK · TURN</span></div>
+<div id="look-hint">👁<br>DRAG<br>TO LOOK</div>
+<div id="fade"></div>
+
+<div id="modal-wrap">
+  <div id="modal">
+    <button id="modal-close">✕</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
