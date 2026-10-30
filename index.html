@@ -61,6 +61,23 @@
   .card .title { font-size:16px; font-weight:600; margin-bottom:6px; color:#fff; }
   .card .role { font-size:13px; color:rgba(232,236,241,.6); }
 
+  /* Featured case study */
+  .case { background:linear-gradient(160deg,#141a26 0%,#10141d 100%); border:1px solid rgba(110,193,255,.22);
+    border-radius:18px; padding:clamp(26px,4vw,44px); position:relative; overflow:hidden; }
+  .case::before { content:""; position:absolute; top:0; left:0; right:0; height:3px;
+    background:linear-gradient(90deg,#ff3346,#4a9bff); }
+  .case .kicker2 { font-size:11px; letter-spacing:.3em; color:#6ec1ff; text-transform:uppercase; margin-bottom:10px; }
+  .case h3 { font-size:clamp(20px,3.2vw,28px); margin-bottom:6px; }
+  .case .client-line { font-size:13px; color:rgba(232,236,241,.6); margin-bottom:22px; }
+  .case .highlight { display:inline-block; background:rgba(126,226,168,.12); border:1px solid rgba(126,226,168,.4);
+    color:#7ee2a8; font-size:13px; font-weight:600; padding:8px 16px; border-radius:999px; margin-bottom:24px; }
+  .case .steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:16px; }
+  .case .step { background:rgba(11,14,20,.55); border:1px solid rgba(255,255,255,.07); border-radius:12px; padding:18px; }
+  .case .step .n { font-size:11px; letter-spacing:.2em; color:#6ec1ff; text-transform:uppercase; margin-bottom:8px; }
+  .case .step p { font-size:13.5px; color:rgba(232,236,241,.78); }
+  .case .bonus { margin-top:18px; font-size:13px; color:rgba(232,236,241,.55);
+    border-left:2px solid rgba(110,193,255,.4); padding-left:14px; }
+
   /* Services */
   .services { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
   .svc { background:#12161f; border:1px solid rgba(255,255,255,.07); border-radius:14px; padding:22px; }
@@ -102,6 +119,7 @@
   <div class="wrap">
     <div class="brand">MAN CHIT LIU</div>
     <div class="links">
+      <a href="#case-study">Case Study</a>
       <a href="#works">Works</a>
       <a href="#services">Services</a>
       <a href="#experience">Experience</a>
@@ -124,6 +142,27 @@
     </div>
   </div>
 </header>
+
+<section id="case-study">
+  <div class="wrap">
+    <h2>Featured Case Study</h2>
+    <div class="case">
+      <div class="kicker2">Ocean Park Hong Kong — Halloween Fest</div>
+      <h3>VOODOO BOO — Headline Haunted Attraction Sound Design</h3>
+      <div class="client-line">Contract audio team · Sound Designer — per-room BGM, trigger &amp; SFX systems</div>
+      <div class="highlight">🎵 My original VOODOO BOO theme song was selected as the attraction's final theme</div>
+      <div class="steps">
+        <div class="step"><div class="n">① The Challenge</div>
+          <p>A headline haunted attraction with an immovable opening deadline, spanning multiple departments — entertainment, props, directors and performers — where sound is typically briefed last and approved slowest.</p></div>
+        <div class="step"><div class="n">② My Observation</div>
+          <p>Instead of waiting for direction, I spent my first weeks mapping how decisions actually flowed — which stakeholder owned which call, and what each department needed from audio. Paired with a veteran film post-production engineer, we split work by strength: he took dialogue recording, I took ambience and music systems.</p></div>
+        <div class="step"><div class="n">③ The Solution</div>
+          <p>I designed a per-room audio system — BGM, triggers and SFX for each zone — and delivered multiple versions ahead of deadline for management to choose from. My AI-assisted composition workflow (the same one behind my released collaboration with virtual singer NYRA) let me prototype the VOODOO BOO theme fast — and it was selected as the final theme of the attraction.</p></div>
+      </div>
+      <p class="bonus">Bonus chapter: I later proposed using an interactive 3D walkthrough — the engine behind <a href="/world/">this very website</a> — as a meeting tool. It wasn't adopted, but my supervisor flagged the park's 50th anniversary in 2027 as a future opportunity.</p>
+    </div>
+  </div>
+</section>
 
 <section id="works">
   <div class="wrap">
@@ -159,11 +198,11 @@
           <div class="title">《Pride》Music Video — dir. Kitty Yang</div>
           <div class="role">Featured track from debut album, shot-on-iPhone workshop collaboration</div></div>
       </a>
-      <a class="card" href="/world/" target="_blank" rel="noopener">
-        <img src="/assets/thumbs/voodoo-boo.jpg" alt="VOODOO BOO theme park sound design">
-        <div class="body"><div class="client">VOODOO BOO PARK</div>
-          <div class="title">Haunted Theme Park Sound Design</div>
-          <div class="role">Sound design across 21 themed zones — rides, fun house, UV maze</div></div>
+      <a class="card" href="#case-study">
+        <img src="/assets/thumbs/voodoo-boo.jpg" alt="VOODOO BOO — Ocean Park Halloween Fest sound design">
+        <div class="body"><div class="client">OCEAN PARK HK · HALLOWEEN FEST</div>
+          <div class="title">VOODOO BOO — Haunted Attraction Sound Design</div>
+          <div class="role">Sound Designer — per-room audio systems; original theme song selected as final theme → read the case study</div></div>
       </a>
     </div>
   </div>

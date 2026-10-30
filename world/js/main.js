@@ -14,8 +14,9 @@ const WORKS = {
   r3: { tag:'red', label:'RED PILL GALLERY', title:'MOSCHINO — Year of the Tiger Campaign BGM',
     body:'Role: Composer & Audio Producer\nTools: Ableton Live\n\nFunky, vibrant soundtrack precisely synchronised with visual pacing, amplifying the campaign\'s bold, playful energy.',
     vids:['mPEqpFp3q58'] },
-  r4: { tag:'red', label:'RED PILL GALLERY', title:'VOODOO BOO PARK — Theme Park Sound Design',
-    body:'Haunted-house theme park sound design across 21 zones (roller coaster, clown fun house, UV maze…).\n\n🚧 Exhibit under construction — coming soon.' },
+  r4: { tag:'red', label:'RED PILL GALLERY · FEATURED CASE STUDY', title:'VOODOO BOO — Ocean Park Halloween Fest',
+    body:'Client: Ocean Park Hong Kong — Halloween Fest (contract audio team)\nRole: Sound Designer — per-room BGM, trigger & SFX systems\n\nA headline haunted attraction with an immovable opening deadline, spanning multiple departments. Paired with a veteran film post-production engineer (dialogue), I owned ambience and music systems — delivering multiple versions ahead of deadline for management to choose from.\n\n🎵 RESULT: My original VOODOO BOO theme song — prototyped with the AI-assisted workflow behind my released collab with virtual singer NYRA — was selected as the final theme of the attraction.',
+    links:[['📖 Read the full case study (homepage)','/#case-study']] },
   r5: { tag:'red', label:'RED PILL GALLERY · ALSO IN BLUE PILL LAB', title:'《你是你的傳奇》— Docudrama Theme & Ending Songs',
     body:'Client: Fame Universal Entertainment Limited\nRole: Music Producer & Supervisor\nRecorded at Zoo Studio · budget control · composition · arrangement · lyrics\nFeaturing Erhu by a Hong Kong Chinese Orchestra musician.',
     audio:[['主題曲「水花」','/assets/audio/docudrama-theme.mp3'],['Ending Song「Everybody like Kung Fu!」(working title)','/assets/audio/docudrama-ending.mp3']],
@@ -389,7 +390,7 @@ standFrame('r3', -16.5,  1.6, Math.PI/2, 'MOSCHINO', 'Year of the Tiger BGM');
 // wall-mounted works
 wallFrame('r1', -19.5, -4.9, 0,       'VANN JEWELRY', 'Brand Film Sound');
 wallFrame('r2', -12.8, -4.9, 0,       'AGE OF TANKS', 'Game Trailer Audio');
-wallFrame('r4', -19.5,  4.9, Math.PI, 'VOODOO BOO PARK', 'Theme Park Sound');
+wallFrame('r4', -19.5,  4.9, Math.PI, 'VOODOO BOO × OCEAN PARK', 'Halloween Fest Sound');
 wallFrame('r5', -12.8,  4.9, Math.PI, '你是你的傳奇', 'Docudrama Songs');
 
 // ==================== BLUE PILL LAB — ORGANIC CAVE ====================
@@ -549,7 +550,7 @@ floatLabel(-16.5, 3.45, -1.6, Math.PI/2, 'APPLE STORE WORKSHOP', '#ffd9d9');
 floatLabel(-16.5, 3.45,  1.6, Math.PI/2, 'INTERNATIONAL BRAND MUSIC DESIGN', '#ffd9d9');
 floatLabel(-19.5, 3.60, -4.9, 0,        'HK-BASED INTERNATIONAL BRANDING SERVICE', '#ffd9d9');
 floatLabel(-12.8, 3.60, -4.9, 0,        'WEB3 GAME · MUSIC PRODUCTION', '#ffd9d9');
-floatLabel(-19.5, 3.60,  4.9, Math.PI,  'THEME PARK SOUND DESIGN CAMPAIGN', '#ffd9d9');
+floatLabel(-19.5, 3.60,  4.9, Math.PI,  'OCEAN PARK HALLOWEEN · THEME SONG SELECTED', '#ffd9d9');
 floatLabel(-12.8, 3.60,  4.9, Math.PI,  'TV SERIES THEME SONG & END TRACK COMPOSITION', '#ffd9d9');
 
 // ---- 展品射燈光柱（ref: owner 提供嘅 spotlight 參考圖）— 純錐形 mesh，零素材成本 ----
