@@ -77,6 +77,7 @@
   .case .step p { font-size:13.5px; color:rgba(232,236,241,.78); }
   .case .bonus { margin-top:18px; font-size:13px; color:rgba(232,236,241,.55);
     border-left:2px solid rgba(110,193,255,.4); padding-left:14px; }
+  .case + .case { margin-top:32px; }
 
   /* Services */
   .services { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
@@ -145,7 +146,7 @@
 
 <section id="case-study">
   <div class="wrap">
-    <h2>Featured Case Study</h2>
+    <h2>Featured Case Studies</h2>
     <div class="case">
       <div class="kicker2">Ocean Park Hong Kong — Halloween Fest</div>
       <h3>VOODOO BOO — Headline Haunted Attraction Sound Design</h3>
@@ -161,6 +162,22 @@
       </div>
       <p class="bonus">Bonus chapter: I later proposed using an interactive 3D walkthrough — the engine behind <a href="/world/">this very website</a> — as a meeting tool. It wasn't adopted, but my supervisor flagged the park's 50th anniversary in 2027 as a future opportunity.</p>
     </div>
+
+    <div class="case" id="case-study-vann">
+      <div class="kicker2">VANN Jewelry — Brand Film (2021)</div>
+      <h3>Brand Film Sound Design — From No Storyboard to On-Time Launch</h3>
+      <div class="client-line">Sound Designer &amp; Composer — retro-futuristic original soundtrack, audio-to-picture sync</div>
+      <div class="highlight">🎵 The client later reused the track on their own initiative for their Shanghai showroom announcement</div>
+      <div class="steps">
+        <div class="step"><div class="n">① The Challenge</div>
+          <p>A grant-funded brand film with an immovable launch date — shooting wrapped late August, final delivery mid-September. The client, a jewellery brand rather than a film house, had no storyboard; the director worked from mood and visual references only.</p></div>
+        <div class="step"><div class="n">② My Observation</div>
+          <p>Clients outside film production often can't preview music in their heads — they know what they want only when they hear it against picture. So instead of waiting for the final cut, I front-loaded the alignment: references, structure and key musical elements were drafted and agreed before shooting even wrapped.</p></div>
+        <div class="step"><div class="n">③ The Solution</div>
+          <p>I composed a retro-futuristic soundtrack (synthwave × futuristic techno) from those references, then fitted it to the locked cut's actual rhythm — turning a two-week window into an on-time delivery. When the sponsor later requested an additional 30-second cut for venue placements, I absorbed it into the same delivery as part of the partnership.</p></div>
+      </div>
+      <p class="bonus">🎬 Watch the film: <a href="https://www.youtube.com/watch?v=40yvHKSG2Zg" target="_blank" rel="noopener">VANN Jewelry brand film (YouTube)</a></p>
+    </div>
   </div>
 </section>
 
@@ -174,11 +191,11 @@
           <div class="title">Year of the Tiger Campaign</div>
           <div class="role">Composer &amp; Audio Producer — campaign BGM production &amp; arrangement</div></div>
       </a>
-      <a class="card" href="https://www.youtube.com/watch?v=40yvHKSG2Zg" target="_blank" rel="noopener">
+      <a class="card" href="#case-study-vann">
         <img src="/assets/thumbs/40yvHKSG2Zg.jpg" alt="VANN Jewelry brand film">
         <div class="body"><div class="client">VANN JEWELRY</div>
           <div class="title">Brand Film Sound Design</div>
-          <div class="role">Sound Designer &amp; Composer — retro-futuristic soundscape, audio-to-picture sync</div></div>
+          <div class="role">Sound Designer &amp; Composer — track reused by client for Shanghai showroom → read the case study</div></div>
       </a>
       <a class="card" href="https://www.youtube.com/watch?v=rcDyp2n9OGI" target="_blank" rel="noopener">
         <img src="/assets/thumbs/rcDyp2n9OGI.jpg" alt="Age of Tanks game trailer">
